@@ -23,13 +23,6 @@ class Authenticate extends Middleware
 
     public function handle($request, Closure $next, $guard = null)
     {
-        if ($request->session()->has('locked')) {
-            return redirect('/lockscreen');
-        }
-        if ( ! $this->auth->user() )
-        {
-            return redirect('lockscreen');
-        }
         return $next($request);
     }
 
