@@ -39,7 +39,7 @@ return [
 
         'main' => [
             'salt' => 'your-salt-string',
-            'length' => 'your-length-integer',
+            'length' => '6',
             // 'alphabet' => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
         ],
 
