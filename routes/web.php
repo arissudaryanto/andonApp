@@ -19,7 +19,7 @@ Route::get('/', [
   ]);
 Route::get('lang/{lang}', ['as' => 'lang.switch', 'uses' => 'App\Http\Controllers\LocalizationController@switchLang']);
 
-Route::get('andon/postdata/log', ['as' => 'log', 'uses' => 'App\Http\Controllers\Module\LogController@input']);
+Route::post('andon/postdata/log', ['as' => 'log', 'uses' => 'App\Http\Controllers\Module\LogController@input']);
 
 
 
