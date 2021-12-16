@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('postdata', ['as' => 'postdata', 'uses' => 'App\Http\Controllers\Module\LogController@input']);
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
