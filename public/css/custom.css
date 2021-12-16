@@ -1,0 +1,294 @@
+.flag {
+    background: url('/images/flags.png') no-repeat;
+    width: 23px;
+    height: 17px;
+    float: left;
+    margin: 4px 6px 0 0;
+  }
+  
+  .en{
+    background-position: 0 -527px;
+  }
+  .id {
+    background-position: 0 -630px;
+  }
+.navbar-custom{
+  background-color: transparent;
+  position: inherit;
+  box-shadow: none;
+}
+.page-title-box-alt{
+  padding: 0px 27px 24px;
+}
+.page-title-box .page-title {
+  font-size: 1.3rem;
+}
+.card {
+  margin-bottom: 15px;
+}
+body[data-sidebar-size=condensed] .left-side-menu{
+  position: fixed;
+}
+.content-page{
+  padding: 0px 15px 65px;
+}
+.left-side-menu{
+  background-image: -webkit-linear-gradient(
+    44deg, #1B0068 40%, #6D3CEA 105%);
+        background-image: -moz-linear-gradient(44deg, #1B0068 40%, #6D3CEA 105%);
+        background-image: linear-gradient(
+    44deg, #1B0068 40%, #6D3CEA 105%);
+}
+.topnav .dropdown.active>.nav-link,.topnav .navbar-nav .dropdown-item.active, .topnav .navbar-nav .dropdown-item:hover  {
+  color: #008b71;
+}
+
+#sidebar-menu>ul>li>a,#sidebar-menu .menuitem-active>a{
+  color: #fff; 
+}
+body[data-sidebar-size=condensed] .left-side-menu #sidebar-menu>ul>li>a i{
+  font-size: 1.5em;
+  color:#fff; 
+}
+body[data-sidebar-size=condensed] .left-side-menu #sidebar-menu>ul>li>a:hover i{
+  color:#6D3CEA
+}
+body[data-sidebar-size=condensed] .left-side-menu #sidebar-menu>ul>li {
+  margin-bottom: 1.3rem;
+}
+.switchery{
+  height: 23px;
+}
+.switchery>small{
+  width: 23px;
+  height: 23px;
+}
+
+.dataTables_paginate{
+  margin: 5px 0 !important;
+  white-space: nowrap;
+  justify-content: flex-end;
+}
+.paginate_button {
+  border-radius: 30px !important;
+  border: none;
+  padding: .375rem .65rem;
+  margin: 0 3px;
+}
+.paginate_button.current {
+  z-index: 3;
+  color: #fff;
+  background-color: #0056c1;
+  border-color: #0056c1;
+}
+.icon-lg{
+  font-size: 1.1rem;
+}
+
+.form-group{
+  margin-top: 15px;
+}
+.input-group-text{
+  padding: 0.7rem 0.9rem;
+}
+
+table.dataTable tbody tr.selected a, table.dataTable tbody th.selected a, table.dataTable tbody td.selected a{
+  color: inherit;
+}
+
+table th, tfoot td{
+  font-weight: bold;
+}
+
+.auth-brand{
+  position: relative !important;
+  top: -0.5rem;
+}
+body[data-layout-mode=horizontal] .logo-box{
+  padding-right: 20px;
+}
+.navbar-light .navbar-nav .show > .nav-link, .navbar-light .navbar-nav .nav-link.active {
+  color: #009688;
+}
+
+
+.calendar {
+  display: flex;
+  align-self: flex-start;
+  max-width: 100%;
+  height: 40px;
+  padding: 5px;
+  margin: 0 auto;
+  align-items: center;
+}
+.calendar button {
+  width: 40px;
+  height: 40px;
+  display: block;
+  line-height: 1;
+  padding: 10px 10px;
+  margin-left: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+.calendar button#backBtn {
+  position: relative;
+}
+.calendar button#forBtn {
+  position: relative;
+}
+
+ul#Calendar {
+  margin: 60px auto;
+  display: flex;
+  flex-wrap: nowrap;
+  list-style: none;
+  padding: 15px;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+ul#Calendar::-webkit-scrollbar {
+  display: none;
+}
+ul#Calendar li {
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  flex: 0 0 auto;
+  font-weight: 700;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-right: 5px;
+  line-height: 1.4;
+  transition: all 0.2s linear 0s;
+}
+
+ul#Calendar li.highlight {
+  color: red;
+}
+ul#Calendar li:hover {
+  transition: all 0.2s linear 0s;
+  z-index: 1;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #009688!important;
+}
+
+.form-file {
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.dropzone-img {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  border: 2px dashed #ced4da;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: 150px;
+  padding: 15px;
+  box-shadow: none;
+}
+
+.dropzone-img div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+#img-remove{
+  display: none;
+  position: absolute;
+  z-index: 3;
+}
+
+.dropzone > .dragover {
+  background-color: #aaa;
+}
+
+.p-2 {
+  padding: 1rem!important;
+}
+.ml-2{
+  margin-left: 1rem!important;
+}
+.form-check{
+  display: inline-block;
+}
+.form-check-input {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.form-check-label {
+  padding: 0.4em 0.6em;
+}
+label{
+  font-weight: 500;
+  color: #4d4d4d;
+}
+.badge{
+  padding: 0.7em;
+}
+.logo-box{
+  background: inherit !important;
+}
+.logo-box .logo {
+  line-height: 45px;
+}
+
+.auth-fluid{
+  background-image: -webkit-linear-gradient(
+  44deg, #1B0068 40%, #6D3CEA 105%);
+      background-image: -moz-linear-gradient(44deg, #1B0068 40%, #6D3CEA 105%);
+      background-image: linear-gradient(
+  44deg, #1B0068 40%, #6D3CEA 105%);
+}
+
+
+.auth-fluid-right{
+  background: url(/images/bg-auth.png) bottom no-repeat;
+  background-size: 80%;
+}
+.bg-vector{
+  display: block;
+  position: relative
+}
+
+.bg-vector::after {
+  content: "";
+  background: url(/images/bg-auth.png) bottom right no-repeat;
+  background-size: 60%;
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: -20px;
+  right: -13px;
+  position: absolute;
+  z-index: 1;   
+}
+.auth-fluid-right h1{
+  font-weight: 700;
+  font-size: 3rem;
+}
+.btn-warning{
+    background-color: #FF6F02;
+}
+
+.bg-purple{
+    background-color: #876def!important;
+}
+
+.navbar-custom .topnav-menu .nav-link{
+  color: #4d4d4d;
+}

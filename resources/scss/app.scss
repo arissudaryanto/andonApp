@@ -1,0 +1,97 @@
+/*
+Template Name: Minton - Responsive Bootstrap 4 Admin Dashboard
+Author: CoderThemes
+Version: 4.0.0
+Website: https://coderthemes.com/
+Contact: support@coderthemes.com
+File: Main Css File
+*/
+
+
+//Core files
+@import "./node_modules/bootstrap/scss/functions";
+@import "./node_modules/bootstrap/scss/variables";
+@import "variables";
+@import "./node_modules/bootstrap/scss/mixins.scss";
+
+
+// Structure
+@import "structure/general";
+@import "structure/left-menu";
+@import "structure/topbar";
+@import "structure/page-head";
+@import "structure/footer";
+@import "structure/layouts";
+
+//Components
+@import "components/avatar";
+@import "components/alerts";
+@import "components/helper";
+@import "components/social";
+@import "components/widgets";
+@import "components/custom-checkbox";
+@import "components/ribbons";
+@import "components/print";
+@import "components/preloader";
+
+//Pages
+@import "pages/authentication";
+@import "pages/components-demo";
+@import "pages/error";
+@import "pages/logout";
+@import "pages/faq";
+@import "pages/maintenance";
+@import "pages/timeline";
+@import "pages/email";
+@import "pages/sitemap";
+@import "pages/search-results";
+@import "pages/pricing";
+@import "pages/gallery";
+@import "pages/coming-soon";
+@import "pages/profile";
+@import "pages/chat";
+@import "pages/task";
+@import "pages/kanbanboard";
+@import "pages/ecommerce";
+@import "pages/order-detail";
+
+
+// Plugins
+@import "plugins/waves";
+@import "plugins/apexcharts";
+@import "plugins/ion-rangeslider";
+@import "plugins/calendar";
+@import "plugins/sparkline-chart";
+@import "plugins/datatable";
+@import "plugins/daterange";
+@import "plugins/form-wizard";
+@import "plugins/select2";
+@import "plugins/slimscroll";
+@import "plugins/toaster";
+@import "plugins/sweetalert";
+@import "plugins/selectize";
+@import "plugins/tippy";
+@import "plugins/nestable-list";
+@import "plugins/hopscotch";
+@import "plugins/jstree";
+@import "plugins/flot";
+@import "plugins/morris";
+@import "plugins/c3";
+@import "plugins/ricksaw";
+@import "plugins/responsive-table";
+@import "plugins/bootstrap-tables";
+@import "plugins/tablesaw";
+@import "plugins/multiple-select";
+@import "plugins/autocomplete";
+@import "plugins/bootstrap-touchspin";
+@import "plugins/parsley";
+@import "plugins/flatpickr";
+@import "plugins/clockpicker";
+@import "plugins/quilljs-editor";
+@import "plugins/dropzone";
+@import "plugins/dropify";
+@import "plugins/x-editable";
+@import "plugins/cropper";
+@import "plugins/google-maps";
+@import "plugins/datepicker";
+@import "plugins/dragula";
