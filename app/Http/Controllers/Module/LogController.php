@@ -32,20 +32,25 @@ class LogController extends Controller
         $data['light']      = $request->get('light');
         $data['status']     = 0;
 
-        DB::beginTransaction();
+        if($request->get('api_key') == null || $request->get('line') == null ||  $request->get('light') == null ){
+            return response()->json(['errors' => 'error'], 401);
+        }else{
+            DB::beginTransaction();
 
-        try {
-
-            Log::create($data);
-
-            DB::commit();
-            return response()->json(['success' => 'success'], 200);
+            try {
     
-        } catch (\Exception $e) {
-
-            DB::rollback();
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+                Log::create($data);
+    
+                DB::commit();
+                return response()->json(['success' => 'success'], 200);
+        
+            } catch (\Exception $e) {
+    
+                DB::rollback();
+                return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            }
         }
+        
 
     }
 
