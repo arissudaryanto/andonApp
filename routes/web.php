@@ -17,11 +17,9 @@ Route::get('/', [
     'middleware' => 'auth',
     'uses' => 'App\Http\Controllers\HomeController@index'
   ]);
+
 Route::get('lang/{lang}', ['as' => 'lang.switch', 'uses' => 'App\Http\Controllers\LocalizationController@switchLang']);
-
-Route::post('andon/postdata/log', ['as' => 'log', 'uses' => 'App\Http\Controllers\Module\LogController@input']);
-
-
+Route::get('postdata', ['as' => 'postdata', 'uses' => 'App\Http\Controllers\Module\LogController@input']);
 
 Auth::routes();
 Route::get('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');

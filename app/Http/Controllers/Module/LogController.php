@@ -32,7 +32,6 @@ class LogController extends Controller
         $data['light']      = $request->get('light');
         $data['status']     = 0;
 
-
         DB::beginTransaction();
 
         try {
