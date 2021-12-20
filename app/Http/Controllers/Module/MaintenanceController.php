@@ -44,12 +44,6 @@ class MaintenanceController extends Controller
             3 => 'Closed'
         );
 
-        $this->priority = array(
-            ''  => 'Silahkan Pilih',
-            'Normal'    => 'Normal',
-            'High'      => 'High',
-            'Critical'  => 'Critical'
-        );
 
     }
     /**
@@ -69,7 +63,7 @@ class MaintenanceController extends Controller
 
        return  DataTables::of($result)
         ->addColumn('action', function ($result) {
-            $action = "<a href='".route('maintenance.log', Hashids::encode($result->id))."' title='Tampilkan' data-toggle='tooltip' class='dropdown-item'><span class='fe-eye icon-lg'></span> Error Log</a>";
+            $action = "<a href='".route('maintenance.log', Hashids::encode($result->id))."' title='Tampilkan' data-toggle='tooltip' class='dropdown-item'><span class='fe-eye icon-lg'></span> Show Error Log</a>";
             return
                 '<div class="dropdown">
                     <a class="btn btn-outhardware border dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -105,13 +99,12 @@ class MaintenanceController extends Controller
         $id       = Hashids::decode($id);
         $hardware = Hardware::findOrFail($id['0']);
         $status   = $this->status;
-        $priority = $this->priority;
         $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        return view('module.maintenance.log',compact('priority','status','category','hardware'));
+        return view('module.maintenance.log',compact('status','category','hardware'));
     }
 
 
-    public function log_datatables($line =  null)
+    public function log_datatables($line)
     {
       
        $result = Log::where('line',$line)->whereNull('deleted_at')->orderBy('created_at','DESC');
@@ -120,9 +113,9 @@ class MaintenanceController extends Controller
         ->addColumn('action', function ($result) {
             
             if($result->status == '0' ) {
-                $action = "<a href='".route('maintenance.add', Hashids::encode($result->id))."' title='Follow Up' data-toggle='tooltip' class='dropdown-item'><span class='fa fa-tools icon-lg'></span> Follow Up</a>";
+                $action = "<a href='".route('maintenance.add', ['id' => Hashids::encode($result->id),'line' => $result->line ])."' title='Follow Up' data-toggle='tooltip' class='dropdown-item'><span class='fa fa-tools icon-lg'></span> Follow Up</a>";
             }else{
-                $action = "<a href='".route('maintenance.show', Hashids::encode($result->id))."' title='Detail Maintenance' data-toggle='tooltip' class='dropdown-item'><span class='fe-file'></span> Detail Maintenance</a>";
+                $action = "<a href='".route('maintenance.show',['id' => Hashids::encode($result->id),'line' => $result->line])."' title='Detail Maintenance' data-toggle='tooltip' class='dropdown-item'><span class='fe-file'></span> Detail Maintenance</a>";
             }
             if($result->status != '3' && $result->status != '0') {
                 $action .= "<a data-id='$result->id' class='dropdown-item' data-bs-toggle='modal' data-bs-target='#modal_test' href='#'' class='dropdown-item'><i class='fe-edit'></i> Update Status</a>";
@@ -165,14 +158,19 @@ class MaintenanceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id)
+    public function create(Request $request, $id)
     {
         $id   = Hashids::decode($id);
         $data = Log::findOrFail($id['0']);
-        $status   = $this->status;
-        $priority = $this->priority;
-        $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        return view('module.maintenance.create',compact('data','priority','status','category'));
+        if($data->line == $request->get('line') ){
+            $hardware = Hardware::where('device_id',$request->get('line'))->first();
+            $status   = $this->status;
+            $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
+            return view('module.maintenance.create',compact('data','status','category','hardware'));
+        }else{
+            return redirect()->route('maintenance.index')->withErrors(['erorr' => 'Data tidak sesuai']);
+        }
+
     }
 
     /**
@@ -212,7 +210,7 @@ class MaintenanceController extends Controller
             LogHistory::create($dataHistory);
 
             DB::commit();
-            return redirect()->route('maintenance.index')->with(['success' => trans('global.success_store')]);
+            return redirect()->route('maintenance.log',Hashids::encode($request->get('hardware_id')))->with(['success' => trans('global.success_store')]);
     
         } catch (\Exception $e) {
 

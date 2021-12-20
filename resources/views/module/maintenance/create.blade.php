@@ -17,19 +17,19 @@
             <div class="card">
                 <div class="card-body">
 
-                <a class="float-left" href="{{ route('maintenance.index') }}"><i class="fe-arrow-left mR-10"></i> {{ trans('global.btn_back')}} </a>
+                <a class="float-left" href="{{ route('maintenance.log',Hashids::encode($hardware->id)) }}"><i class="fe-arrow-left mR-10"></i> {{ trans('global.btn_back')}} </a>
                 <hr class="mB-30">
 
                 <h5 class="mb-3">DATA LOG</h5>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-2">API Key</label>
-                            <div class="col-sm-6">:  {{ $data->api_key }}</div>
+                            <label class="col-sm-2">Hardware ID</label>
+                            <div class="col-sm-6">:  {{ $hardware->device_id }}</div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-2">Hardware ID</label>
-                            <div class="col-sm-6">:  {{ $data->line }}</div>
+                            <label class="col-sm-2">Hardware Alias</label>
+                            <div class="col-sm-6">:  {{ $hardware->name }}</div>
                         </div>
         
                     </div>
@@ -57,6 +57,7 @@
                     ]) !!}
 
                     <input type="hidden" value="{{ $data->id }}" name="data_log_id">
+                    <input type="hidden" value="{{ $hardware->id }}" name="hardware_id">
 
                     @include('module.maintenance.form')
 

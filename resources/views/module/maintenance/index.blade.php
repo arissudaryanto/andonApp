@@ -32,9 +32,9 @@
                         <thead class="bg-default">
                             <tr>
                                 <th>Device ID</th>
-                                <th>Light</th>
-                                <th>Downtime</th>
-                                <th>Timestamp</th>
+                                <th>Current Light</th>
+                                <th>Last Downtime</th>
+                                <th>Last Update</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

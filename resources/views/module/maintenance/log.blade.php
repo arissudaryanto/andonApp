@@ -70,10 +70,6 @@
                                 <label>Status</label>
                                 {!! Form::select('status_id', $status,null, ['class' => 'form-control select2']) !!}
                             </div>
-                            <div class="mb-2 col-sm-2">
-                                <label>Priority</label>
-                                {!! Form::select('priority_id', $priority,null, ['class' => 'form-control select2','id' => 'priority']) !!}
-                            </div>
                             <div class="col-sm-4">
                                 <label>Periode</label>
                                 <div class="input-group w-100">

@@ -24,14 +24,14 @@ class Dashboard extends Model
 
     public static function getEntity($year = null){
 
-        $where = ' WHERE EXTRACT(YEAR from created_at) ='. $year;
+        $where = ' WHERE light = "RED" AND EXTRACT(YEAR from created_at) ='. $year;
         $sql = "
         SELECT
         COALESCE(SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END),0) AS open, 
         COALESCE(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END),0) AS process, 
         COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END),0) AS hold,
         COALESCE(SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END),0) AS closed
-        FROM data_log
+        FROM data_log 
         $where
         ";
         return DB::select( DB::raw($sql));

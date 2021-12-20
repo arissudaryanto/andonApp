@@ -31,19 +31,6 @@
     <div class="col-sm-6">
 
         <div class="form-group row">
-            <label class="col-sm-3 col-form-label text-end">Priority<span class="text-danger">*</span></label>
-            <div class="col-sm-6">
-                {!! Form::select('priority', $priority, old('priority'), ['class' => 'form-control select2', 'placeholder' => '', 'required' => '']) !!}
-                <p class="help-block"></p>
-                @if($errors->has('name'))
-                    <p class="help-block">
-                        {{ $errors->first('name') }}
-                    </p>
-                @endif
-            </div>
-        </div>
-
-        <div class="form-group row">
             <label class="col-sm-3 col-form-label text-end">Status<span class="text-danger">*</span></label>
             <div class="col-sm-6">
                 {!! Form::select('status', $status, old('status'), ['class' => 'form-control select2', 'placeholder' => '', 'required' => '']) !!}
