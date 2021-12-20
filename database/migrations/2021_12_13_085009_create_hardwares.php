@@ -19,9 +19,12 @@ class CreateHardwares extends Migration
             $table->bigInteger('area_id')->nullable()->unsigned();
             $table->string('name')->nullable();
             $table->string('type')->nullable();
+            $table->string('light')->nullable()->default('GREEN');
             $table->string('image_url')->nullable();
             $table->text('description')->nullable();
             $table->boolean('status')->nullable()->default(false);
+            $table->datetime('downtime')->nullable();
+            $table->datetime('uptime')->nullable();
             $table->bigInteger('created_by')->nullable()->unsigned();
             $table->bigInteger('updated_by')->nullable()->unsigned();
             $table->softDeletes();

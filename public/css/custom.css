@@ -28,6 +28,7 @@
 }
 body[data-sidebar-size=condensed] .left-side-menu{
   position: fixed;
+  background-color: #323b44;
 }
 .content-page{
   padding: 0px 15px 65px;
@@ -255,7 +256,9 @@ label{
   44deg, #1B0068 40%, #6D3CEA 105%);
 }
 
-
+.bg-line{
+  background-color: #d0dae3;
+}
 .auth-fluid-right{
   background: url(/images/bg-auth.png) bottom no-repeat;
   background-size: 80%;

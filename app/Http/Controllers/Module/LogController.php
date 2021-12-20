@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Module;
 
 use App\Models\Module\Log;
+use App\Models\Master\Hardware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
@@ -31,26 +32,37 @@ class LogController extends Controller
         $data['line']       = $request->get('line');
         $data['light']      = $request->get('light');
         $data['status']     = 0;
+        $status['light']    = $request->get('light');
+        if($request->get('light') == 'RED'){
+            $status['downtime']    = date('Y-m-d H:i:s');
+        }
+
+        if($request->get('light') == 'GREEN'){
+            $status['uptime']    = date('Y-m-d H:i:s');
+        }
 
         if($request->get('api_key') == null || $request->get('line') == null ||  $request->get('light') == null ){
-            return response()->json(['errors' => 'error'], 401);
+            return response()->json(['errors' => 'All field is required'], 401);
         }else{
-            DB::beginTransaction();
+            $hardware = Hardware::where('device_id',$request->get('line'))->first();
 
-            try {
-    
-                Log::create($data);
-    
-                DB::commit();
-                return response()->json(['success' => 'success'], 200);
-        
-            } catch (\Exception $e) {
-    
-                DB::rollback();
-                return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            if($hardware){
+
+                DB::beginTransaction();
+
+                try {
+                    $hardware->update($status);
+                    Log::create($data);
+                    DB::commit();
+                    return response()->json(['success' => 'Success'], 200);
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+                }
+            }else{
+                return response()->json(['errors' => 'Device ID not found'], 401);
             }
         }
-        
 
     }
 

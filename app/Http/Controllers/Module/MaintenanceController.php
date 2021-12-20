@@ -6,6 +6,7 @@ use App\Models\Module\Maintenance;
 use App\Models\Module\Log;
 use App\Models\Module\LogHistory;
 use App\Models\Master\Category;
+use App\Models\Master\Hardware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
@@ -49,6 +50,7 @@ class MaintenanceController extends Controller
             'High'      => 'High',
             'Critical'  => 'Critical'
         );
+
     }
     /**
      * Display a listing of Maintenances.
@@ -57,20 +59,67 @@ class MaintenanceController extends Controller
      */
     public function index()
     {
-        $status   = $this->status;
-        $priority = $this->priority;
-        $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        return view('module.maintenance.index',compact('priority','status','category'));
+        return view('module.maintenance.index');
     }
 
     public function datatables($status =  null)
     {
       
-        $result = Log::whereNull('deleted_at')->orderBy('created_at','ASC');
+       $result = Hardware::whereNull('deleted_at')->orderBy('created_at','ASC');
 
        return  DataTables::of($result)
         ->addColumn('action', function ($result) {
-            if($result->status == '0') {
+            $action = "<a href='".route('maintenance.log', Hashids::encode($result->id))."' title='Tampilkan' data-toggle='tooltip' class='dropdown-item'><span class='fe-eye icon-lg'></span> Error Log</a>";
+            return
+                '<div class="dropdown">
+                    <a class="btn btn-outhardware border dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Aksi <div class="arrow-down"></div>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">'
+                        .$action.
+                    '</div>
+                </div>';
+        })
+        ->addColumn('status', function ($result){
+            if($result->status=='1'){
+                return "<span class='badge bg-success'>Aktif</span>";
+            }else{
+                return "<span class='badge bg-danger'>Non Aktif</span>";
+            }
+        })
+        ->addColumn('downtime', function ($result){
+            return getDowntime($result->downtime, $result->uptime);
+        })
+        ->editColumn('light', function ($result){
+            return getStatusLight($result->light);
+        })
+        ->editColumn('updated_at', function ($result) {
+            return $result->updated_at ? with(new Carbon($result->updated_at))->format('d/m/Y H:i:s') : '';
+        }) ->rawColumns(['action', 'status','light'])
+        ->make(true);
+
+    }
+
+    public function log($id)
+    {
+        $id       = Hashids::decode($id);
+        $hardware = Hardware::findOrFail($id['0']);
+        $status   = $this->status;
+        $priority = $this->priority;
+        $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
+        return view('module.maintenance.log',compact('priority','status','category','hardware'));
+    }
+
+
+    public function log_datatables($line =  null)
+    {
+      
+       $result = Log::where('line',$line)->whereNull('deleted_at')->orderBy('created_at','DESC');
+
+       return  DataTables::of($result)
+        ->addColumn('action', function ($result) {
+            
+            if($result->status == '0' ) {
                 $action = "<a href='".route('maintenance.add', Hashids::encode($result->id))."' title='Follow Up' data-toggle='tooltip' class='dropdown-item'><span class='fa fa-tools icon-lg'></span> Follow Up</a>";
             }else{
                 $action = "<a href='".route('maintenance.show', Hashids::encode($result->id))."' title='Detail Maintenance' data-toggle='tooltip' class='dropdown-item'><span class='fe-file'></span> Detail Maintenance</a>";
@@ -78,7 +127,8 @@ class MaintenanceController extends Controller
             if($result->status != '3' && $result->status != '0') {
                 $action .= "<a data-id='$result->id' class='dropdown-item' data-bs-toggle='modal' data-bs-target='#modal_test' href='#'' class='dropdown-item'><i class='fe-edit'></i> Update Status</a>";
             }
-            return
+            if($result->light == 'RED'){
+                return
                 '<div class="dropdown">
                     <a class="btn btn-outhardware border dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fe-menu"></i>
@@ -87,10 +137,17 @@ class MaintenanceController extends Controller
                         .$action.
                     '</div>
                 </div>';
-
+            }else{
+                return '-';
+            }
+        
         }) 
         ->addColumn('status', function ($result){
-            return getStatusData($result->status);
+            if($result->light == 'GREEN'){
+                return '-';
+            }else{
+                return getStatusData($result->status);
+            }
         })
         ->addColumn('light', function ($result){
             return getStatusLight($result->light);

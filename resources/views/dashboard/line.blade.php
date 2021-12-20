@@ -1,0 +1,109 @@
+@extends('layouts.app')
+
+@section('content')
+
+    <!-- Start Content-->
+    <div class="container-fluid">
+        
+        <!-- start page title -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="page-title-box page-title-box-alt">
+                    <div class="page-title">
+                        <h4 class="float-left page-title">Dashboard
+                            <small class="text-muted ml-2"><i class="fe-calendar"></i> {{ date('d M Y') }} </small>
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>     
+        <!-- end page title --> 
+
+        <div class="row ">
+            <div class="col-xl-12">
+                <div class="row">
+                    <div class="col-xl-3 col-md-3">
+                        <div class="card text-dark">
+                            <div class="card-body p-2">
+                                <div class="text-center">
+                                    Open Issues <br>
+                                    <small class="mb-1">including hold/process SLA </small>
+                                    <h2 class="mb-1 mt-0"> {{ $entity[0]->open + $entity[0]->hold  + $entity[0]->process }} </h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body p-2">
+                                <div class="text-center">
+                                    Closed Issues <br>
+                                    <small class="mb-1">(Total)</small>
+                                    <h2 class="mb-1 mt-0 text-white">{{$entity[0]->closed }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body p-2">
+                                <div class="text-center">
+                                   Line Production <br>
+                                    <small class="text-white mb-1">(jumlah yang dimanage)</small>
+                                    <h2 class="mb-1 mt-0 text-white">{{ $hardware[0]->line}} </h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-3">
+                        <div class="card bg-primary">
+                            <div class="card-body p-2 text-white">
+                                <div class="text-center">
+                                    Trolley <br>
+                                    <small class="text-white mb-1">(jumlah yang dimanage)</small>
+                                    <h2 class="mb-1 mt-0 text-white">{{ $hardware[0]->trolley }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-6">
+                <h5>LINE PRODUCTION</h5>
+                <div class="row">
+                    @foreach ($device as $item)
+                        <div class="col-lg-3">
+                            {{ $item->name }}
+                            <div class="p-2 bg-line">
+                                <div class="row">
+                                    <div class="col text-center">
+                                        <i class="fa fa-circle font-28 {{ ($item->light=='RED') ? 'text-danger' : 'text-muted' }}"></i> 
+                                    </div>
+                                    <div class="col text-center">
+                                        <i class="fa fa-circle font-28 {{ ($item->light=='GREEN') ? 'text-success' : 'text-muted' }}"></i> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="col-6">
+
+            </div>
+        </div>
+        
+    </div> 
+
+@endsection
+
+
+

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Dashboard\Sales;
 use App\Models\Module\Dashboard;
+use App\Models\Master\Hardware;
 
 
 class HomeController extends Controller
@@ -31,14 +32,23 @@ class HomeController extends Controller
             $year = date('Y');
         }
 
-        $hardware   = Dashboard::getHardware();
-        $entity     = Dashboard::getEntity($year);
-        $category   = Dashboard::getByCategory($year);
-        $area       = Dashboard::getByArea($year);
-        $priority   = Dashboard::getPriority($year);
-        $day        = Dashboard::getByDay($year);
+        if(isAdministrator()){
 
-        return view('dashboard.index',compact('year','entity','category','area','priority','hardware'));
+            $hardware   = Dashboard::getHardware();
+            $entity     = Dashboard::getEntity($year);
+            $category   = Dashboard::getByCategory($year);
+            $area       = Dashboard::getByArea($year);
+            $priority   = Dashboard::getPriority($year);
+            $day        = Dashboard::getByDay($year);
+    
+            return view('dashboard.index',compact('year','entity','category','area','priority','hardware'));
+        }else{
+            $hardware = Dashboard::getHardware();
+            $device   = Hardware::whereNull('deleted_at')->get();
+            $entity   = Dashboard::getEntity($year);
+            return view('dashboard.line',compact('entity','hardware','device'));
+        }
+       
     }
 
 }

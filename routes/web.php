@@ -37,6 +37,9 @@ Route::group(['middleware'=>['auth']], function () {
     Route::get('maintenance_show/{id?}', ['uses' => 'App\Http\Controllers\Module\MaintenanceController@show', 'as' => 'maintenance.show'] );
     Route::get('maintenance_export', ['uses' => 'App\Http\Controllers\Module\MaintenanceController@export', 'as' => 'maintenance.export'] );
 
+    Route::get('maintenance_log/{id?}', ['uses' => 'App\Http\Controllers\Module\MaintenanceController@log', 'as' => 'maintenance.log'] );
+    Route::get('maintenance_log_datatables/{line?}', ['uses' => 'App\Http\Controllers\Module\MaintenanceController@log_datatables', 'as' => 'maintenance.log.datatables'] );
+
 });
 
 // SETTING

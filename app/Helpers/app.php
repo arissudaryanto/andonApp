@@ -10,10 +10,8 @@ function getStatusLight($status)
 {
 	if($status == 'RED'){
 		return "<span class='badge bg-danger'>&nbsp;</span>";
-	}else if($status == 'GREEN'){
-		return "<span class='badge bg-success'>&nbsp;</span>";
 	}else{
-		return "<span class='badge bg-warning'>&nbsp;</span>";
+		return "<span class='badge bg-success'>&nbsp;</span>";
 	}
 }
 
@@ -127,4 +125,36 @@ function getChecked($val, $arr){
 
 function format_number($val){
 	return number_format($val,2,",",'.');
+}
+
+
+
+function getStatusLine ($deviceID) {
+	$sql = "
+	SELECT 
+	*
+	FROM data_log
+  	WHERE `line` = '".$deviceID."' and status != 3 
+  	ORDER BY created_at DESC LIMIT 1";
+	
+	return  DB::select( DB::raw($sql));
+
+}
+
+
+function getDowntime ($downtime, $uptime) {
+
+	if($downtime == null || $uptime == null){
+		return '-';
+	}else{
+			// Create two new DateTime-objects...
+			$date1 = new DateTime($downtime);
+			$date2 = new DateTime($uptime);
+
+			// The diff-methods returns a new DateInterval-object...
+			$diff = $date2->diff($date1);
+
+			// Call the format method on the DateInterval-object
+			return $diff->format('%a Day and %h hours');
+	}
 }
