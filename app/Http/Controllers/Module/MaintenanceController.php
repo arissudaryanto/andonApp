@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Module;
 
 use App\Models\Module\Maintenance;
 use App\Models\Module\Log;
-use App\Models\Module\LogHistory;
 use App\Models\Module\Dashboard;
 use App\Models\Master\Category;
+use App\Models\Master\Area;
 use App\Models\Master\Hardware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -38,13 +38,6 @@ class MaintenanceController extends Controller
         $this->middleware('permission:maintenance.update', ['only' => ['edit','update']]);
         $this->middleware('permission:maintenance.delete', ['only' => ['destroy']]);
 
-        $this->status = array(
-            ''  => 'Silahkan Pilih',
-            1 => 'Process',
-            2 => 'Closed'
-        );
-
-
     }
     /**
      * Display a listing of Maintenances.
@@ -53,13 +46,17 @@ class MaintenanceController extends Controller
      */
     public function index()
     {
+        $area  = Area::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
+
         return view('module.maintenance.index');
     }
 
     public function datatables($status =  null)
     {
       
-       $result = Hardware::whereNull('deleted_at')->orderBy('created_at','ASC');
+       $result = Hardware::
+       select('hardwares.*')
+       ->whereNull('deleted_at')->orderBy('created_at','ASC');
 
        return  DataTables::of($result)
         ->addColumn('action', function ($result) {
@@ -77,10 +74,7 @@ class MaintenanceController extends Controller
             return getStatusLight($result->light);
         })
         ->editColumn('downtime', function ($result) {
-            return $result->downtime ? with(new Carbon($result->downtime))->format('d/m/Y H:i:s') : '-';
-        })
-        ->editColumn('uptime', function ($result) {
-            return $result->uptime ? with(new Carbon($result->uptime))->format('d/m/Y H:i:s') : '-';
+            return $result->downtime ? with(new Carbon($result->downtime))->format('d-m-Y H:i:s') : '-';
         })
         ->rawColumns(['action', 'status','light'])
         ->make(true);
@@ -97,9 +91,8 @@ class MaintenanceController extends Controller
         $id        = Hashids::decode($id);
         $hardware  = Hardware::findOrFail($id['0']);
         $statistic = Dashboard::getEntity($year,$hardware->device_id);
-        $status    = $this->status;
         $category  = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        return view('module.maintenance.log',compact('status','category','hardware','statistic'));
+        return view('module.maintenance.log',compact('category','hardware','statistic'));
     }
 
 
@@ -116,38 +109,30 @@ class MaintenanceController extends Controller
             }else{
                 $action = "<a href='".route('maintenance.show',['id' => Hashids::encode($result->id),'line' => $result->line])."' title='Detail Maintenance' data-toggle='tooltip' class='dropdown-item'><span class='fe-file'></span> Detail Maintenance</a>";
             }
-            if($result->status != '3' && $result->status != '0') {
-                $action .= "<a data-id='$result->id' class='dropdown-item' data-bs-toggle='modal' data-bs-target='#modal_test' href='#'' class='dropdown-item'><i class='fe-edit'></i> Update Status</a>";
-            }
-            if($result->light == 'RED'){
-                return
-                '<div class="dropdown">
-                    <a class="btn btn-outhardware border dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fe-menu"></i>
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">'
-                        .$action.
-                    '</div>
-                </div>';
-            }else{
-                return '-';
-            }
+            return
+            '<div class="dropdown">
+                <a class="btn btn-outhardware border dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fe-menu"></i>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">'
+                    .$action.
+                '</div>
+            </div>';
         
         }) 
         ->addColumn('status', function ($result){
-            if($result->light == 'GREEN'){
-                return '-';
-            }else{
-                return getStatusData($result->status);
-            }
+            return getStatusData($result->status);
         })
-        ->addColumn('light', function ($result){
-            return getStatusLight($result->light);
+        ->addColumn('range', function ($result){
+            return getDowntime($result->downtime, $result->uptime);
         })
-        ->editColumn('created_at', function ($result) {
-            return $result->created_at ? with(new Carbon($result->created_at))->format('d-m-Y H:i:s') : '';
+        ->editColumn('downtime', function ($result) {
+            return $result->downtime ? with(new Carbon($result->downtime))->format('d-m-Y H:i:s') : '-';
         })
-        ->rawColumns(['action', 'status','light'])
+        ->editColumn('uptime', function ($result) {
+            return $result->uptime ? with(new Carbon($result->uptime))->format('d-m-Y H:i:s') : '-';
+        })
+        ->rawColumns(['action', 'status'])
         ->make(true);
 
     }
@@ -163,9 +148,8 @@ class MaintenanceController extends Controller
         $data = Log::findOrFail($id['0']);
         if($data->line == $request->get('line') ){
             $hardware = Hardware::where('device_id',$request->get('line'))->first();
-            $status   = $this->status;
             $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-            return view('module.maintenance.create',compact('data','status','category','hardware'));
+            return view('module.maintenance.create',compact('data','category','hardware'));
         }else{
             return redirect()->route('maintenance.index')->withErrors(['erorr' => 'Data tidak sesuai']);
         }
@@ -182,13 +166,8 @@ class MaintenanceController extends Controller
     {
         $data = $request->all();
         $data['assigned_by'] = Auth::user()->id;
-        $dataLog['status'] = $request->get('status');
-
-        $dataHistory['data_log_id'] = $request->get('data_log_id');
-        $dataHistory['user_id']     = Auth::user()->id;
-        $dataHistory['remark']      = 'Initial Maintenance';
-        $dataHistory['status']      = $request->get('status');
         $data['number'] = \Config::get('app.prefix_number')."-".date('m').'-'.date('Y')."-".Str::random(6);
+        $dataLog['status'] = 1;
         
         if($request->hasFile('file_attachment')){
             $file     = $request->file('file_attachment');
@@ -206,7 +185,6 @@ class MaintenanceController extends Controller
             $log =  Log::findOrFail($request->get('data_log_id'));
             $log->update($dataLog);
             Maintenance::create($data);
-            LogHistory::create($dataHistory);
 
             DB::commit();
             return redirect()->route('maintenance.log',Hashids::encode($request->get('hardware_id')))->with(['success' => trans('global.success_store')]);
@@ -250,46 +228,6 @@ class MaintenanceController extends Controller
         $items->update($data);
         return redirect()->route('maintenance.index')->with(['success' => trans('global.success_update')]);
     
-    }
-
-    public function status(Request $request)
-    {
-
-        if($request->isMethod('post'))
-        {
-            $dataLog['status'] = $request->get('status');
-            $log =  Log::findOrFail($request->get('data_log_id'));
-
-            $dataHistory['data_log_id'] = $request->get('data_log_id');
-            $dataHistory['user_id']     = Auth::user()->id;
-            $dataHistory['remark']      = $request->get('remark');
-            $dataHistory['status']      = $request->get('status');
-
-            if($request->hasFile('file_attachment')){
-                $file     = $request->file('file_attachment');
-                $name     = Str::random(25);
-                $folder   = '/uploads/'.date('Y').'/'.date('M').'/';
-                $filePath = $folder . $name. '.' . $file->getClientOriginalExtension();
-                $this->uploadResize($file, $folder, 'public', $name);
-                $dataHistory['file_attachment'] = $filePath;
-            }
-            DB::beginTransaction();
-
-            try {
-
-                $log->update($dataLog);
-                LogHistory::create($dataHistory);
-
-                DB::commit();
-                return redirect()->route('maintenance.index')->with(['success' => trans('global.success_store')]);
-    
-            } catch (\Exception $e) {
-
-                DB::rollback();
-                return redirect()->back()->withErrors(['error' => $e->getMessage()]);
-            }
-
-        }
     }
 
 

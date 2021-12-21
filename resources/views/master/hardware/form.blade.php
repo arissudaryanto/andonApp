@@ -4,7 +4,7 @@
         <div class="col-sm-8">
             <div class="form-check">
                 <input name='type' type='radio' class='form-check-input is_type' value='line' id='relation_line' {{  isset($item->type) ? ($item->type=='line' ? 'checked ': '' ) : 'checked' }}> 
-                <label class="form-check-label" for='relation_line'>Line Production</label>
+                <label class="form-check-label" for='relation_line'>Line </label>
             </div>
             <div class="form-check">
                 <input name='type' type='radio' class='form-check-input is_type' value='trolley' id='relation_trolley' {{  isset($item->type) ? ($item->type=='trolley' ? 'checked ': '') : '' }}> 

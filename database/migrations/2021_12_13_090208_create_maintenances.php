@@ -19,7 +19,6 @@ class CreateMaintenances extends Migration
             $table->integer('data_log_id')->nullable()->unsigned();
             $table->bigInteger('category_id')->nullable()->unsigned();
             $table->text('description')->nullable();
-            $table->string('priority')->nullable();
             $table->bigInteger('assigned_by')->nullable()->unsigned();
             $table->bigInteger('created_by')->nullable()->unsigned();
             $table->bigInteger('updated_by')->nullable()->unsigned();

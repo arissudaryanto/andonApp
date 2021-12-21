@@ -1,58 +1,35 @@
-<div class="row">
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">Damaged Category<span class="text-danger">*</span></label>
     <div class="col-sm-6">
-
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label text-end">Damaged Category<span class="text-danger">*</span></label>
-            <div class="col-sm-8">
-                {!! Form::select('category_id', $category, old('category_id'), ['class' => 'form-control select2', 'placeholder' => '', 'required' => '']) !!}
-                <p class="help-block"></p>
-                @if($errors->has('name'))
-                    <p class="help-block">
-                        {{ $errors->first('name') }}
-                    </p>
-                @endif
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label text-end">Description<span class="text-danger">*</span></label>
-            <div class="col-sm-8">
-                {!! Form::textarea('description', old('description'), ['class' => 'form-control', 'rows' => 3, 'placeholder' => '', 'required' => '']) !!}
-                <p class="help-block"></p>
-                @if($errors->has('name'))
-                    <p class="help-block">
-                        {{ $errors->first('name') }}
-                    </p>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <div class="col-sm-6">
-
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label text-end">Status<span class="text-danger">*</span></label>
-            <div class="col-sm-6">
-                {!! Form::select('status', $status, old('status'), ['class' => 'form-control select2', 'placeholder' => '', 'required' => '']) !!}
-                <p class="help-block"></p>
-                @if($errors->has('name'))
-                    <p class="help-block">
-                        {{ $errors->first('name') }}
-                    </p>
-                @endif
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <label class="col-sm-3 col-form-label text-end">File Attachment</label>
-            <div class="col-sm-6">
-                <input type="file" name="file_attachment" class="form-control">
-            </div>
-        </div>
-
+        {!! Form::select('category_id', $category, old('category_id'), ['class' => 'form-control select2', 'placeholder' => '', 'required' => '']) !!}
+        <p class="help-block"></p>
+        @if($errors->has('name'))
+            <p class="help-block">
+                {{ $errors->first('name') }}
+            </p>
+        @endif
     </div>
 </div>
 
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">Description<span class="text-danger">*</span></label>
+    <div class="col-sm-6">
+        {!! Form::textarea('description', old('description'), ['class' => 'form-control', 'rows' => 3, 'placeholder' => '', 'required' => '']) !!}
+        <p class="help-block"></p>
+        @if($errors->has('name'))
+            <p class="help-block">
+                {{ $errors->first('name') }}
+            </p>
+        @endif
+    </div>
+</div>
+
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">File Attachment</label>
+    <div class="col-sm-6">
+        <input type="file" name="file_attachment" class="form-control">
+    </div>
+</div>
 
 
 <hr>

@@ -4,6 +4,22 @@
 
         <ul class="list-unstyled topnav-menu float-end mb-0">
 
+            <li>
+                <button class="button-menu-mobile waves-effect waves-light">
+                    <i class="fe-menu"></i>
+                </button>
+            </li>
+
+            <li>
+                <a class="navbar-toggle nav-link" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+                    <div class="lines">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </a>
+            </li>  
+
             <li class="dropdown d-none d-lg-inline-block">
                 <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" data-toggle="fullscreen" href="#">
                     <i class="fe-maximize noti-icon"></i>
@@ -51,8 +67,6 @@
             </li>
            
         </ul>
-
-        <!-- LOGO -->
 
         <div class="clearfix"></div>
     </div>

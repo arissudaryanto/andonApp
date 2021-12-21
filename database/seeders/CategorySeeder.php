@@ -14,14 +14,32 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        Category::create([
-            'name' => 'Kategori 1',
-            'status' => true,
-        ]);
-
-        Category::create([
-            'name' => 'Kategori 2',
-            'status' => true,
-        ]);
+        Category::insert(
+            [
+                'name' => 'Part NG',
+                'status' => true,
+            ],
+            [
+                'name' => 'Part Habis',
+                'status' => true,
+            ],
+            [
+                'name' => 'Setting Miss',
+                'status' => true,
+            ],
+            [
+                'name' => 'Error Judgement',
+                'status' => true,
+            ],
+            [
+                'name' => 'Trouble Mesin',
+                'status' => true,
+            ],
+            [
+                'name' => 'Human Error',
+                'status' => true,
+            ]
+        );
+        
     }
 }

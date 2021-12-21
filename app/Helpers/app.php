@@ -25,23 +25,11 @@ function getStatusData($status, $raw = null)
 		}else{
 			return "Open";
 		}
-	}else if($status == 1){
-		if($raw==null){
-			return "<span class='badge bg-primary'>Procces</span>";
-		}else{
-			return "Process";
-		}
-	}else if($status == 3){
+	}else {
 		if($raw==null){
 			return "<span class='badge bg-success'>Closed</span>";
 		}else{
 			return "Closed";
-		}
-	}else{
-		if($raw==null){
-			return "<span class='badge bg-warning'>Hold</span>";
-		}else{
-			return "Hold";
 		}
 	}
 }
@@ -56,14 +44,6 @@ function getNotifications($user_id)
 	->where('status', 0)
 	->get();
 	return $query;
-}
-
-
-function getPurchaser()
-{
-	$users = DB::table('users')->where('type',5)->where('data_access',NULL)
-	->get();
-	return $users ;
 }
 
 
@@ -85,22 +65,7 @@ function isAdministrator() {
 		return false;
 	}
 }
-
-function isAdministratorLocation() {
-	if(Auth::user()->type==3){
-		return true;
-	}else{
-		return false;
-	}
-}
-
-function isEmployee () {
-    if (Auth::user()->type==4) {
-        return true;
-    } else {
-        return false;
-    }
-}
+ 
 
 function group_by($key, $data) {
     $result = array();
@@ -146,7 +111,7 @@ function getDowntime ($downtime, $uptime) {
 
 	if($downtime == null || $uptime == null){
 		return '-';
-	}else{
+	} else{
 			// Create two new DateTime-objects...
 			$date1 = new DateTime($downtime);
 			$date2 = new DateTime($uptime);
@@ -155,6 +120,6 @@ function getDowntime ($downtime, $uptime) {
 			$diff = $date2->diff($date1);
 
 			// Call the format method on the DateInterval-object
-			return $diff->format('%a Day and %h hours');
+			return $diff->format('%ad %hh %im');
 	}
 }

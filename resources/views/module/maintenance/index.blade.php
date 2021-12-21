@@ -31,10 +31,10 @@
                     <table id="dataTables" class="table table-striped" cellspacing="0" width="100%">
                         <thead class="bg-default">
                             <tr>
-                                <th>Device ID</th>
-                                <th>Current Light</th>
+                                <th>Line/Trolley</th>
+                                <th>Current Status</th>
                                 <th>Last Downtime</th>
-                                <th>Last Uptime</th>
+                                <th>Total Downtime</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

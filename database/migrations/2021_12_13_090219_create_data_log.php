@@ -17,7 +17,8 @@ class CreateDataLog extends Migration
             $table->id();
             $table->string('api_key')->nullable();
             $table->string('line')->nullable();
-            $table->string('light')->nullable();
+            $table->datetime('downtime')->nullable();
+            $table->datetime('uptime')->nullable();
             $table->integer('status')->default(0);
             $table->softDeletes();
             $table->timestamps();

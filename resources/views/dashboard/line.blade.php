@@ -23,12 +23,11 @@
             <div class="col-xl-12">
                 <div class="row">
                     <div class="col-xl-3 col-md-3">
-                        <div class="card text-dark">
+                        <div class="card bg-danger text-white">
                             <div class="card-body p-2">
                                 <div class="text-center">
                                     Open Issues <br>
-                                    <small class="mb-1">including hold/process SLA </small>
-                                    <h2 class="mb-1 mt-0"> {{ $entity[0]->open + $entity[0]->process }} </h2>
+                                    <h2 class="mb-1 mt-0 text-white"> {{ $entity[0]->open }} </h2>
                                 </div>
                             </div>
                         </div>
@@ -39,8 +38,7 @@
                             <div class="card-body p-2">
                                 <div class="text-center">
                                     Closed Issues <br>
-                                    <small class="mb-1">(Total)</small>
-                                    <h2 class="mb-1 mt-0 text-white">{{$entity[0]->closed }}</h2>
+                                    <h2 class="mb-1 mt-0 text-white"> {{ $entity[0]->closed }} </h2>
                                 </div>
                             </div>
                         </div>
@@ -51,7 +49,6 @@
                             <div class="card-body p-2">
                                 <div class="text-center">
                                    Line Production <br>
-                                    <small class="text-white mb-1">(jumlah yang dimanage)</small>
                                     <h2 class="mb-1 mt-0 text-white">{{ $hardware[0]->line}} </h2>
                                 </div>
                             </div>
@@ -63,7 +60,6 @@
                             <div class="card-body p-2 text-white">
                                 <div class="text-center">
                                     Trolley <br>
-                                    <small class="text-white mb-1">(jumlah yang dimanage)</small>
                                     <h2 class="mb-1 mt-0 text-white">{{ $hardware[0]->trolley }}</h2>
                                 </div>
                             </div>
@@ -75,9 +71,9 @@
         </div>
 
         <div class="row mt-4">
-            <h5>HARDWARE</h5>
+            <h5>LINE/TROLLEY</h5>
             @foreach ($device as $item)
-                <div class="col-lg-2">
+                <div class="col-lg-2 mb-2">
                     <a href="{{ route('maintenance.log',Hashids::encode($item->id)) }}" >
                         {{ $item->name }}
                     </a>

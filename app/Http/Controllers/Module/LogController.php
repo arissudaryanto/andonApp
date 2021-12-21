@@ -30,42 +30,46 @@ class LogController extends Controller
         
         $data['api_key']    = $request->get('api_key');
         $data['line']       = $request->get('line');
-        $data['light']      = $request->get('light');
         $data['status']     = 0;
         $status['light']    = $request->get('light');
 
         if($request->get('light') == 'RED'){
-            $status['downtime']    = date('Y-m-d H:i:s');
+            $data['downtime']    = date('Y-m-d H:i:s');
+            $status['downtime']  = date('Y-m-d H:i:s');
         }
 
-        if($request->get('light') == 'GREEN'){
-            $status['uptime']    = date('Y-m-d H:i:s');
-        }
 
         if($request->get('api_key') == null || $request->get('line') == null ||  $request->get('light') == null ){
             return response()->json(['errors' => 'All field is required'], 401);
         }else{
             $hardware = Hardware::where('device_id',$request->get('line'))->first();
 
-            if($hardware->light == $request->get('light')){
-                return response()->json(['errors' => 'Hardware already maintenance / or not trouble'], 401);
-            }else{
-                if($hardware){
+            if($hardware){
+                if($hardware->light == $request->get('light')){
+                    return response()->json(['errors' => 'Hardware already maintenance / or not trouble'], 401);
+                }else{
 
                     DB::beginTransaction();
 
                     try {
                         $hardware->update($status);
-                        Log::create($data);
+                        if($request->get('light') == 'GREEN'){
+                            $up['uptime'] = date('Y-m-d H:i:s');
+                            $up['status'] = 1;
+                            $log = Log::where('line',$request->get('line'))->where('status',0)->first();
+                            $log->update($up);
+                        }else{
+                            Log::create($data);
+                        }
                         DB::commit();
                         return response()->json(['success' => 'Success'], 200);
                     } catch (\Exception $e) {
                         DB::rollback();
                         return redirect()->back()->withErrors(['error' => $e->getMessage()]);
                     }
-                }else{
-                    return response()->json(['errors' => 'Hardware ID not found'], 401);
                 }
+            }else{
+                return response()->json(['errors' => 'Hardware ID not found'], 401);
             }
         }
 

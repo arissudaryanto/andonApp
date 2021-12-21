@@ -25,9 +25,9 @@ class Dashboard extends Model
     public static function getEntity($year = null, $device_id = null){
 
         if(isAdministrator()){
-            $where = ' WHERE light = "RED" AND EXTRACT(YEAR from created_at) ='. $year;
+            $where = ' WHERE EXTRACT(YEAR from created_at) ='. $year;
         }else{
-            $where = ' WHERE line ="'.$device_id.'" AND light = "RED" AND EXTRACT(YEAR from created_at) ='. $year;
+            $where = ' WHERE line ="'.$device_id.'" AND EXTRACT(YEAR from created_at) ='. $year;
         }     
         $sql = "
         SELECT
