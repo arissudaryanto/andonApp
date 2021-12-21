@@ -33,6 +33,7 @@ class LogController extends Controller
         $data['light']      = $request->get('light');
         $data['status']     = 0;
         $status['light']    = $request->get('light');
+
         if($request->get('light') == 'RED'){
             $status['downtime']    = date('Y-m-d H:i:s');
         }
@@ -46,21 +47,25 @@ class LogController extends Controller
         }else{
             $hardware = Hardware::where('device_id',$request->get('line'))->first();
 
-            if($hardware){
-
-                DB::beginTransaction();
-
-                try {
-                    $hardware->update($status);
-                    Log::create($data);
-                    DB::commit();
-                    return response()->json(['success' => 'Success'], 200);
-                } catch (\Exception $e) {
-                    DB::rollback();
-                    return redirect()->back()->withErrors(['error' => $e->getMessage()]);
-                }
+            if($hardware->light == $request->get('light')){
+                return response()->json(['errors' => 'Hardware already maintenance / or not trouble'], 401);
             }else{
-                return response()->json(['errors' => 'Device ID not found'], 401);
+                if($hardware){
+
+                    DB::beginTransaction();
+
+                    try {
+                        $hardware->update($status);
+                        Log::create($data);
+                        DB::commit();
+                        return response()->json(['success' => 'Success'], 200);
+                    } catch (\Exception $e) {
+                        DB::rollback();
+                        return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+                    }
+                }else{
+                    return response()->json(['errors' => 'Hardware ID not found'], 401);
+                }
             }
         }
 

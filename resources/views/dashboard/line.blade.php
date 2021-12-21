@@ -28,7 +28,7 @@
                                 <div class="text-center">
                                     Open Issues <br>
                                     <small class="mb-1">including hold/process SLA </small>
-                                    <h2 class="mb-1 mt-0"> {{ $entity[0]->open + $entity[0]->hold  + $entity[0]->process }} </h2>
+                                    <h2 class="mb-1 mt-0"> {{ $entity[0]->open + $entity[0]->process }} </h2>
                                 </div>
                             </div>
                         </div>
@@ -75,30 +75,27 @@
         </div>
 
         <div class="row mt-4">
-            <div class="col-6">
-                <h5>LINE PRODUCTION</h5>
-                <div class="row">
-                    @foreach ($device as $item)
-                        <div class="col-lg-3">
-                            {{ $item->name }}
-                            <div class="p-2 bg-line">
-                                <div class="row">
-                                    <div class="col text-center">
-                                        <i class="fa fa-circle font-28 {{ ($item->light=='RED') ? 'text-danger' : 'text-muted' }}"></i> 
-                                    </div>
-                                    <div class="col text-center">
-                                        <i class="fa fa-circle font-28 {{ ($item->light=='GREEN') ? 'text-success' : 'text-muted' }}"></i> 
-                                    </div>
+            <h5>HARDWARE</h5>
+            @foreach ($device as $item)
+                <div class="col-lg-2">
+                    <a href="{{ route('maintenance.log',Hashids::encode($item->id)) }}" >
+                        {{ $item->name }}
+                    </a>
+                    <a href="{{ route('maintenance.log',Hashids::encode($item->id)) }}" >
+                        <div class="p-2 bg-line">
+                            <div class="row">
+                                <div class="col text-center">
+                                    <i class="fa fa-circle font-28 {{ ($item->light=='RED') ? 'text-danger' : 'text-muted' }}"></i> 
+                                </div>
+                                <div class="col text-center">
+                                    <i class="fa fa-circle font-28 {{ ($item->light=='GREEN') ? 'text-success' : 'text-muted' }}"></i> 
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    </a>
+                    <small>Last Downtime: {{ ($item->downtime) ? date('d/m/Y H:s:s', strtotime($item->downtime)) : '-'}} </small>
                 </div>
-            </div>
-
-            <div class="col-6">
-
-            </div>
+            @endforeach
         </div>
         
     </div> 

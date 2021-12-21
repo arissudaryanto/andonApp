@@ -34,7 +34,7 @@
                                 <th>Device ID</th>
                                 <th>Current Light</th>
                                 <th>Last Downtime</th>
-                                <th>Last Update</th>
+                                <th>Last Uptime</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -62,7 +62,7 @@
                 {data: 'device_id', name: 'device_id'},
                 {data: 'light', name: 'light'},
                 {data: 'downtime', name: 'downtime', searchable: false},
-                {data: 'updated_at', name: 'updated_at', searchable: false},
+                {data: 'uptime', name: 'uptime', searchable: false},
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ]
         });

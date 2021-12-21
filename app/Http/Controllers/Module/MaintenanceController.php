@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Module;
 use App\Models\Module\Maintenance;
 use App\Models\Module\Log;
 use App\Models\Module\LogHistory;
+use App\Models\Module\Dashboard;
 use App\Models\Master\Category;
 use App\Models\Master\Hardware;
 use Illuminate\Http\Request;
@@ -40,8 +41,7 @@ class MaintenanceController extends Controller
         $this->status = array(
             ''  => 'Silahkan Pilih',
             1 => 'Process',
-            2 => 'Hold',
-            3 => 'Closed'
+            2 => 'Closed'
         );
 
 
@@ -63,16 +63,8 @@ class MaintenanceController extends Controller
 
        return  DataTables::of($result)
         ->addColumn('action', function ($result) {
-            $action = "<a href='".route('maintenance.log', Hashids::encode($result->id))."' title='Tampilkan' data-toggle='tooltip' class='dropdown-item'><span class='fe-eye icon-lg'></span> Show Error Log</a>";
-            return
-                '<div class="dropdown">
-                    <a class="btn btn-outhardware border dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Aksi <div class="arrow-down"></div>
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">'
-                        .$action.
-                    '</div>
-                </div>';
+            $action = "<a href='".route('maintenance.log', Hashids::encode($result->id))."' title='Tampilkan' data-toggle='tooltip' class='btn btn-sm btn-outline'><span class='fe-eye icon-lg'></span></a>";
+            return $action;
         })
         ->addColumn('status', function ($result){
             if($result->status=='1'){
@@ -81,26 +73,33 @@ class MaintenanceController extends Controller
                 return "<span class='badge bg-danger'>Non Aktif</span>";
             }
         })
-        ->addColumn('downtime', function ($result){
-            return getDowntime($result->downtime, $result->uptime);
-        })
         ->editColumn('light', function ($result){
             return getStatusLight($result->light);
         })
-        ->editColumn('updated_at', function ($result) {
-            return $result->updated_at ? with(new Carbon($result->updated_at))->format('d/m/Y H:i:s') : '';
-        }) ->rawColumns(['action', 'status','light'])
+        ->editColumn('downtime', function ($result) {
+            return $result->downtime ? with(new Carbon($result->downtime))->format('d/m/Y H:i:s') : '-';
+        })
+        ->editColumn('uptime', function ($result) {
+            return $result->uptime ? with(new Carbon($result->uptime))->format('d/m/Y H:i:s') : '-';
+        })
+        ->rawColumns(['action', 'status','light'])
         ->make(true);
 
     }
 
-    public function log($id)
+    public function log(Request $request, $id)
     {
-        $id       = Hashids::decode($id);
-        $hardware = Hardware::findOrFail($id['0']);
-        $status   = $this->status;
-        $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        return view('module.maintenance.log',compact('status','category','hardware'));
+        $year = $request->get('year');
+        if($request->get('year') == null){
+            $year = date('Y');
+        }
+
+        $id        = Hashids::decode($id);
+        $hardware  = Hardware::findOrFail($id['0']);
+        $statistic = Dashboard::getEntity($year,$hardware->device_id);
+        $status    = $this->status;
+        $category  = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
+        return view('module.maintenance.log',compact('status','category','hardware','statistic'));
     }
 
 

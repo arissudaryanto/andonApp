@@ -61,7 +61,7 @@
     <div class="form-group row">
         <div class="col-sm-6">
             <input type="checkbox" class="switchery" name="status" data-plugin="switchery" data-color="#039cfd" id="switchery" value="{{ $item->status ?? '0'}}"/>
-            <label>Status Line</label>
+            <label>Status Hardware</label>
             @if($errors->has('status'))
                 <p class="help-block">
                     {{ $errors->first('status') }}

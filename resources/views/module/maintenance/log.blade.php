@@ -29,35 +29,67 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-2">Device ID</label>
+                            <label class="col-sm-3">Device ID</label>
                             <div class="col-sm-6">:  {{ $hardware->device_id }}</div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-2">Alias</label>
+                            <label class="col-sm-3">Alias</label>
                             <div class="col-sm-6">:  {{ $hardware->name }}</div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-2">Light</label>
+                            <label class="col-sm-3">Current Light</label>
                             <div class="col-sm-6">:  {!! getStatusLight($hardware->light) !!}</div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-2">Updated Data</label>
+                            <label class="col-sm-3">Last Updated Data</label>
                             <div class="col-sm-6">: {{ date('d M Y H:i:s',strtotime($hardware->updated_at)) }}
                             </div>
                         </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-xl-4 col-md-4">
+                                <div class="card bg-primary text-dark">
+                                    <div class="card-body p-2  text-white">
+                                        <h2 class="mb-1 mt-0  text-white">{{ $statistic[0]->process + $statistic[0]->open + $statistic[0]->closed }}  </h2>
+                                        Total Issues <br>
+                                        <small class="mb-1 text-white">Total of Issues </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-md-4">
+                                <div class="card bg-danger text-white">
+                                    <div class="card-body p-2">
+                                        <h2 class="mb-1 mt-0 text-white">{{ $statistic[0]->process + $statistic[0]->open}}  </h2>
+                                        Open Issues <br>
+                                        <small class="mb-1 text-white">including hold/process SLA </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-md-4">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body p-2">
+                                        <h2 class="mb-1 mt-0 text-white">{{ $statistic[0]->closed }}</h2>
+                                        Closed Issues <br>
+                                        <small class="mb-1">(Total)</small>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                       
                     </div>
                 </div>
                 <hr>
                 <div class="row mB-20">
                     <div class="col-sm-12">
-
-                        <a  href="#" data-bs-toggle="collapse" data-bs-target="#export" class="btn btn-sm float-end btn-outline-success text-uppercase">
+                        <a href="#" data-bs-toggle="collapse" data-bs-target="#export" class="btn btn-sm float-end btn-outline-success text-uppercase">
                             EXPORT DATA
                         </a>
+                        <h5>DATA LOG</h5>
                     </div>
                 </div>
+                <hr>
+
                 <div class="collapse mb-3" id="export" aria-expanded="false">
                     <form id="form" method="GET" action="{{ route('maintenance.export') }}">
                         {{ csrf_field() }}
@@ -123,8 +155,7 @@
                     <div class="col-sm-8">
                       <select class="form-control" name="status">
                           <option value="1"> Process</option>
-                          <option value="2"> Hold</option>
-                          <option value="3"> Closed</option>
+                          <option value="2"> Closed</option>
                       </select>
                     </div>
                 </div>

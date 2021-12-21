@@ -22,15 +22,18 @@ class Dashboard extends Model
     }
 
 
-    public static function getEntity($year = null){
+    public static function getEntity($year = null, $device_id = null){
 
-        $where = ' WHERE light = "RED" AND EXTRACT(YEAR from created_at) ='. $year;
+        if(isAdministrator()){
+            $where = ' WHERE light = "RED" AND EXTRACT(YEAR from created_at) ='. $year;
+        }else{
+            $where = ' WHERE line ="'.$device_id.'" AND light = "RED" AND EXTRACT(YEAR from created_at) ='. $year;
+        }     
         $sql = "
         SELECT
         COALESCE(SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END),0) AS open, 
         COALESCE(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END),0) AS process, 
-        COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END),0) AS hold,
-        COALESCE(SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END),0) AS closed
+        COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END),0) AS closed
         FROM data_log 
         $where
         ";
@@ -51,7 +54,6 @@ class Dashboard extends Model
         ";
         return DB::select( DB::raw($sql));
     }
-
 
 
     public static function getByCategory($year = null)
