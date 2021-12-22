@@ -240,14 +240,6 @@ class MaintenanceController extends Controller
             ->when(!empty($data['category_id']), function ($query) use ($data) {
                 return $query->where('maintenances.category_id',$data['category_id']);
             })
-            ->when(!empty($data['status_id']), function ($query) use ($data) {
-                return $query->where('status_id',$data['status_id']);
-            })
-            ->when(!empty($data['priority']), function ($query) use ($data) {
-                if($data['priority'] != 'semua'){
-                    return $query->where('priority',$data['priority']);
-                }
-            })
             ->when(!empty($data['start_date']), function ($query) use ($data) {
                 if($data['end_date']){
                     $start = date("Y-m-d",strtotime($data['start_date']));
@@ -329,10 +321,11 @@ class MaintenanceController extends Controller
                 $sheet->getColumnDimension('D')->setAutoSize(true);
                 $sheet->getColumnDimension('E')->setAutoSize(true);
                 $sheet->getColumnDimension('F')->setAutoSize(true);
-                $sheet->getColumnDimension('F')->setAutoSize(true);
+                $sheet->getColumnDimension('G')->setAutoSize(true);
                 $sheet->getColumnDimension('H')->setAutoSize(true);
                 $sheet->getColumnDimension('I')->setAutoSize(true);
                 $sheet->getColumnDimension('J')->setAutoSize(true);
+                $sheet->getColumnDimension('K')->setAutoSize(true);
 
                 $sheet->setCellValue('B2', strtoupper(\Config::get('app.company_name')));
                 $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(16);
@@ -354,35 +347,23 @@ class MaintenanceController extends Controller
                     $sheet->setCellValue('C8', ': All');
                 }
 
-                $sheet->setCellValue('B9', 'Status');
-                if($request->input('status_id')){
-                    $sheet->setCellValue('C9', ': '. getStatusData($request->input('status_id'),'raw'));
-                }else{
-                    $sheet->setCellValue('C9', ': All');
-                }
 
-                $sheet->setCellValue('B9', 'Priority');
-                if($request->input('status_id')){
-                    $sheet->setCellValue('C9', ': '. $request->input('priority'));
-                }else{
-                    $sheet->setCellValue('C9', ': All');
-                }
-
-                $sheet->setCellValue('B10', 'Date Range');
-                $sheet->setCellValue('C10', ': '.date('d M Y',strtotime($request->input('start_date')))." s/d ".date('d M Y',strtotime($request->input('end_date'))));
+                $sheet->setCellValue('B9', 'Period');
+                $sheet->setCellValue('C9', ': '.date('d M Y',strtotime($request->input('start_date')))." s/d ".date('d M Y',strtotime($request->input('end_date'))));
 
                 $sheet->setCellValue('A12', 'NO');
-                $sheet->setCellValue('B12', 'NUMBER');
-                $sheet->setCellValue('C12', 'LINE');
-                $sheet->setCellValue('D12', 'LIGHT');
-                $sheet->setCellValue('E12', 'TIMESTAMP');
-                $sheet->setCellValue('F12', 'GROUP AREA');
-                $sheet->setCellValue('G12', 'CATEGORY');
-                $sheet->setCellValue('H12', 'DESCRIPTION');
-                $sheet->setCellValue('I12', 'ASSIGNED BY');
-                $sheet->setCellValue('J12', 'STATUS');
-                $sheet->getStyle('A12:J12')->getFont()->setBold(true);
-                $sheet->getStyle('A12:J12')->applyFromArray($styleArrayItem);
+                $sheet->setCellValue('B12', 'TICKET NUMBER');
+                $sheet->setCellValue('C12', 'LINE/TROLLEY ID');
+                $sheet->setCellValue('D12', 'GROUP AREA');
+                $sheet->setCellValue('E12', 'TIMESTAMP RED');
+                $sheet->setCellValue('F12', 'TIMESTAMP GREEN');
+                $sheet->setCellValue('G12', 'DOWNTIME');
+                $sheet->setCellValue('H12', 'CATEGORY');
+                $sheet->setCellValue('I12', 'DESCRIPTION');
+                $sheet->setCellValue('J12', 'ASSIGNED BY');
+                $sheet->setCellValue('K12', 'STATUS');
+                $sheet->getStyle('A12:K12')->getFont()->setBold(true);
+                $sheet->getStyle('A12:K12')->applyFromArray($styleArrayItem);
         
                 $rows = 13;
                 $no   = 1 ;
@@ -390,17 +371,18 @@ class MaintenanceController extends Controller
                 foreach ($query as $item){
 
                     $sheet->setCellValue('A' . $rows, $no);
-                    $sheet->setCellValue('B' . $rows, $item->api_key);
+                    $sheet->setCellValue('B' . $rows, $item->number);
                     $sheet->setCellValue('C' . $rows, $item->line);
                     $sheet->setCellValue('D' . $rows, $item->light);
-                    $sheet->setCellValue('E' . $rows, date('d M Y', strtotime($item->created_at)));
-                    $sheet->setCellValue('F' . $rows, '');
-                    $sheet->setCellValue('G' . $rows, $item->category);
-                    $sheet->setCellValue('H' . $rows, $item->description);
-                    $sheet->setCellValue('I' . $rows, $item->user);
-                    $sheet->setCellValue('J' . $rows, getStatusData($item->status,'raw'));
+                    $sheet->setCellValue('E' . $rows, date('d M Y H:i:s', strtotime($item->downtime)));
+                    $sheet->setCellValue('F' . $rows, date('d M Y H:i:s', strtotime($item->uptime)));
+                    $sheet->setCellValue('G' . $rows, getDowntime($item->downtime, $item->uptime));
+                    $sheet->setCellValue('H' . $rows, $item->category);
+                    $sheet->setCellValue('I' . $rows, $item->description);
+                    $sheet->setCellValue('J' . $rows, $item->user);
+                    $sheet->setCellValue('K' . $rows, getStatusData($item->status,'raw'));
 
-                    $sheet->getStyle('A' . $rows.':J'.$rows)->applyFromArray($styleArrayTabel);
+                    $sheet->getStyle('A' . $rows.':K'.$rows)->applyFromArray($styleArrayTabel);
                     $sheet->getStyle('G' . $rows)->getAlignment()->setWrapText(true); 
 
                     $rows = $rows + 1;
