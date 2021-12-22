@@ -62,6 +62,7 @@
 
                 <div class="collapse mb-3" id="export" aria-expanded="false">
                     <form id="form" method="GET" action="{{ route('maintenance.export') }}">
+                        <input type='hidden' name='line' value="{{ $hardware->device_id }}">
                         {{ csrf_field() }}
                         <div class="form-group row">
                             <div class="mb-2 col-sm-3">

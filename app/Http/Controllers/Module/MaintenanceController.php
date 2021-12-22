@@ -47,8 +47,9 @@ class MaintenanceController extends Controller
     public function index()
     {
         $area  = Area::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-
-        return view('module.maintenance.index');
+        $category  = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
+        $hardware  = Hardware::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'device_id')->prepend('Silahkan Pilih...', '');
+        return view('module.maintenance.index',compact('category','hardware'));
     }
 
     public function datatables($status =  null)
@@ -240,6 +241,9 @@ class MaintenanceController extends Controller
             ->when(!empty($data['category_id']), function ($query) use ($data) {
                 return $query->where('maintenances.category_id',$data['category_id']);
             })
+            ->when(!empty($data['line']), function ($query) use ($data) {
+                return $query->where('data_log.line',$data['line']);
+            })
             ->when(!empty($data['start_date']), function ($query) use ($data) {
                 if($data['end_date']){
                     $start = date("Y-m-d",strtotime($data['start_date']));
@@ -253,7 +257,7 @@ class MaintenanceController extends Controller
             ->get();
 
             if( $query->isEmpty() ){
-                return redirect()->route('maintenance.report')->withInput()->withErrors('Tidak terdapat data untuk di Export');
+                return redirect()->route('maintenance.index')->withInput()->withErrors('Tidak terdapat data untuk di Export');
             }else{
                 $styleArrayTabel = array(
                 'alignment' => array(
@@ -374,8 +378,8 @@ class MaintenanceController extends Controller
                     $sheet->setCellValue('B' . $rows, $item->number);
                     $sheet->setCellValue('C' . $rows, $item->line);
                     $sheet->setCellValue('D' . $rows, $item->light);
-                    $sheet->setCellValue('E' . $rows, date('d M Y H:i:s', strtotime($item->downtime)));
-                    $sheet->setCellValue('F' . $rows, date('d M Y H:i:s', strtotime($item->uptime)));
+                    $sheet->setCellValue('E' . $rows, isset($item->downtime) ? date('d M Y H:i:s', strtotime($item->downtime)) : '');
+                    $sheet->setCellValue('F' . $rows, isset($item->uptime) ? date('d M Y H:i:s', strtotime($item->uptime)) : '');
                     $sheet->setCellValue('G' . $rows, getDowntime($item->downtime, $item->uptime));
                     $sheet->setCellValue('H' . $rows, $item->category);
                     $sheet->setCellValue('I' . $rows, $item->description);
