@@ -96,17 +96,6 @@
                 }
             });
 
-            if($('#is_recomended').val()=='1'){
-                $('#is_recomended').trigger('click');
-            }
-            $( "#sis_recomended" ).on( "change", function() {
-                if( $( this ).prop('checked') ) {
-                    $( this ).attr('value', '1');
-                }else{
-                    $( this ).attr('value', '0');
-                }
-            });
-
         });
     </script>
 @stop

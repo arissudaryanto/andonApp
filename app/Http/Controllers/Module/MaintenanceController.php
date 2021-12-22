@@ -105,19 +105,12 @@ class MaintenanceController extends Controller
         ->addColumn('action', function ($result) {
             
             if($result->status == '0' ) {
-                $action = "<a href='".route('maintenance.add', ['id' => Hashids::encode($result->id),'line' => $result->line ])."' title='Follow Up' data-toggle='tooltip' class='dropdown-item'><span class='fa fa-tools icon-lg'></span> Follow Up</a>";
+                $action = "<a href='".route('maintenance.add', ['id' => Hashids::encode($result->id),'line' => $result->line ])."' title='Follow Up' data-toggle='tooltip' class='dropdown-item'><span class='fa fa-tools icon-lg'></span></a>";
             }else{
-                $action = "<a href='".route('maintenance.show',['id' => Hashids::encode($result->id),'line' => $result->line])."' title='Detail Maintenance' data-toggle='tooltip' class='dropdown-item'><span class='fe-file'></span> Detail Maintenance</a>";
+
+                $action = "<a data-bs-toggle='modal' data-bs-target='#modalPreview' href='#' data-value='".route('maintenance.show', ['id' => Hashids::encode($result->id)])."' title='Detail' class='dropdown-item modalPreview'><span class='fe-eye icon-lg'></span></a>";
             }
-            return
-            '<div class="dropdown">
-                <a class="btn btn-outhardware border dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fe-menu"></i>
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">'
-                    .$action.
-                '</div>
-            </div>';
+            return $action;
         
         }) 
         ->addColumn('status', function ($result){
@@ -208,7 +201,7 @@ class MaintenanceController extends Controller
       
         $id    = Hashids::decode($id);
         $data  = Log::findOrFail($id['0']);
-        return view('module.maintenance.show', compact('data'));
+        return view('module.maintenance.show', compact('data'))->renderSections()['content'];
     }
     
 

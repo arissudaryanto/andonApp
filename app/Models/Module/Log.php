@@ -25,8 +25,4 @@ class Log extends Model
       return $this->hasOne(Maintenance::class,'data_log_id');
    }
 
-   public function history(){
-      return $this->hasMany(LogHistory::class,'data_log_id');
-   }
-    
 }
