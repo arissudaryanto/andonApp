@@ -114,6 +114,7 @@ class HardwareController extends Controller
             $data['image_url'] = $filePath;
         }
         $data['created_by'] = Auth::user()->id;
+        $data['light']      = 'GREEN';
 
         if ($request->get('status')) {
             $data['status'] = 1;

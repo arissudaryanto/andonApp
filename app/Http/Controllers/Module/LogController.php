@@ -57,7 +57,9 @@ class LogController extends Controller
                             $up['uptime'] = date('Y-m-d H:i:s');
                             $up['status'] = 2;
                             $log = Log::where('line',$request->get('line'))->where('status',1)->first();
-                            $log->update($up);
+                            if($log){
+                                $log->update($up);
+                            }
                         }else{
                             Log::create($data);
                         }
