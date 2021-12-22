@@ -90,8 +90,8 @@
                     <table id="dataTables" class="table table-striped" cellspacing="0" width="100%">
                         <thead class="bg-default">
                             <tr>
-                                <th>Timestamp RED</th>
-                                <th>Timestamp GREEN</th>
+                                <th><span class='badge bg-danger'>&nbsp;</span> Timestamp RED</th>
+                                <th><span class='badge bg-success'>&nbsp;</span> Timestamp GREEN</th>
                                 <th>Downtime</th>
                                 <th>Status</th>
                                 <th>Actions</th>

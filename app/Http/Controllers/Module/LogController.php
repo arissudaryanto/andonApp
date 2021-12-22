@@ -55,8 +55,8 @@ class LogController extends Controller
                         $hardware->update($status);
                         if($request->get('light') == 'GREEN'){
                             $up['uptime'] = date('Y-m-d H:i:s');
-                            $up['status'] = 1;
-                            $log = Log::where('line',$request->get('line'))->where('status',0)->first();
+                            $up['status'] = 2;
+                            $log = Log::where('line',$request->get('line'))->where('status',1)->first();
                             $log->update($up);
                         }else{
                             Log::create($data);
