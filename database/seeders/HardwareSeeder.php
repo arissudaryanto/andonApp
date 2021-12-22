@@ -15,12 +15,27 @@ class HardwareSeeder extends Seeder
     public function run()
     {
         Hardware::insert(
+        [
             [
                 'device_id' => 'line1',
                 'area_id'   => 1,
                 'name'      => 'Line 1',
                 'status'    => true,
             ],
+            [
+                'device_id' => 'line2',
+                'area_id'   => 1,
+                'name'      => 'Line 2',
+                'status'    => true,
+            ],
+            [
+                'device_id' => 'line3',
+                'area_id'   => 1,
+                'name'      => 'Line 3',
+                'status'    => true,
+            ],
+        ]
+
         );
         
     }

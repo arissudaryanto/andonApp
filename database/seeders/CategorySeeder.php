@@ -16,30 +16,32 @@ class CategorySeeder extends Seeder
     {
         Category::insert(
             [
-                'name' => 'Part NG',
-                'status' => true,
-            ],
-            [
-                'name' => 'Part Habis',
-                'status' => true,
-            ],
-            [
-                'name' => 'Setting Miss',
-                'status' => true,
-            ],
-            [
-                'name' => 'Error Judgement',
-                'status' => true,
-            ],
-            [
-                'name' => 'Trouble Mesin',
-                'status' => true,
-            ],
-            [
-                'name' => 'Human Error',
-                'status' => true,
+                [
+                    'name' => 'Part NG',
+                    'status' => true,
+                ],
+                [
+                    'name' => 'Part Habis',
+                    'status' => true,
+                ],
+                [
+                    'name' => 'Setting Miss',
+                    'status' => true,
+                ],
+                [
+                    'name' => 'Error Judgement',
+                    'status' => true,
+                ],
+                [
+                    'name' => 'Trouble Mesin',
+                    'status' => true,
+                ],
+                [
+                    'name' => 'Human Error',
+                    'status' => true,
+                ]
             ]
         );
-        
     }
+    
 }

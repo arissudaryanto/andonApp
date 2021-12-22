@@ -36,7 +36,7 @@
                             <div class="col-6">:  {!! getStatusLight($hardware->light) !!}</div>
                         </div>
                     </div>
-                    <div class="col-md-6 d-lg-block">
+                    <div class="col-md-6 d-none d-lg-inline-block">
                         <div class="row justify-content-end">
                             <div class="col-xl-4 col-md-4">
                                 <div class="card bg-primary text-dark">
@@ -52,8 +52,8 @@
                 <hr>
                 <div class="row mB-20">
                     <div class="col-sm-12">
-                        <a href="#" data-bs-toggle="collapse" data-bs-target="#export" class="btn btn-sm float-end btn-outline-success text-uppercase">
-                            EXPORT DATA
+                        <a href="#" data-bs-toggle="collapse" data-bs-target="#export" class="float-end">
+                            <i class="fa fa-file-excel icon-lg"></i>
                         </a>
                         <h5>DATA LOG</h5>
                     </div>
