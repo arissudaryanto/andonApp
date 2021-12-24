@@ -12,9 +12,9 @@
 </div>
 
 <div class="form-group row">
-    <label class="col-sm-3 col-form-label">Description<span class="text-danger">*</span></label>
+    <label class="col-sm-3 col-form-label">Detail </label>
     <div class="col-sm-6">
-        {!! Form::textarea('description', old('description'), ['class' => 'form-control', 'rows' => 3, 'placeholder' => '', 'required' => '']) !!}
+        {!! Form::textarea('description', old('description'), ['class' => 'form-control', 'rows' => 3, 'placeholder' => '']) !!}
         <p class="help-block"></p>
         @if($errors->has('name'))
             <p class="help-block">
@@ -24,14 +24,6 @@
     </div>
 </div>
 
-<div class="form-group row">
-    <label class="col-sm-3 col-form-label">File Attachment</label>
-    <div class="col-sm-6">
-        <input type="file" name="file_attachment" class="form-control">
-    </div>
-</div>
-
-
 <hr>
 <div class="form-group row">
     <div class="col-sm-12">
@@ -39,11 +31,3 @@
         {!! Form::submit(trans('global.btn_submit'), ['class' => 'btn btn-danger text-uppercase','id' => 'btn-submit']) !!}
     </div>
 </div>
-
-@section('js')
-    <script>
-        $(document).ready(function() {
-      
-        });
-    </script>
-@stop

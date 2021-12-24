@@ -27,29 +27,17 @@ class Dashboard extends Model
         if(isAdministrator()){
             $where = ' WHERE EXTRACT(YEAR from created_at) ='. $year;
         }else{
-            $where = ' WHERE line ="'.$device_id.'" AND EXTRACT(YEAR from created_at) ='. $year;
-        }     
+            $where = ' WHERE EXTRACT(YEAR from created_at) ='. $year;
+        } 
+        
+        if($device_id != null){
+            $where .= ' AND line ="'.$device_id.'"';
+        }  
         $sql = "
         SELECT
         COALESCE(SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END),0) AS open, 
-        COALESCE(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END),0) AS process, 
-        COALESCE(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END),0) AS closed
-        FROM data_log 
-        $where
-        ";
-        return DB::select( DB::raw($sql));
-    }
-
-
-    public static function getPriority($year = null){
-
-        $where = ' WHERE EXTRACT(YEAR from created_at) ='. $year;
-        $sql = "
-        SELECT
-        COALESCE(SUM(CASE WHEN priority = 'normal' THEN 1 ELSE 0 END),0) AS normal, 
-        COALESCE(SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END),0) AS high, 
-        COALESCE(SUM(CASE WHEN priority = 'critical' THEN 1 ELSE 0 END),0) AS critical
-        FROM maintenances
+        COALESCE(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END),0) AS closed
+        FROM data_logs 
         $where
         ";
         return DB::select( DB::raw($sql));
@@ -62,7 +50,7 @@ class Dashboard extends Model
         FROM categories t1 
         LEFT JOIN (
                 SELECT category_id, count(id) As num
-                FROM maintenances 
+                FROM data_logs 
                 WHERE EXTRACT(YEAR from created_at) = $year
                 GROUP BY category_id
             ) t2 ON t1.id = t2.category_id
@@ -77,10 +65,10 @@ class Dashboard extends Model
         $sql = "SELECT t1.name, t2.num
         FROM areas t1 
         LEFT JOIN (
-                SELECT hardwares.area_id, count(data_log.id) As num
-                FROM data_log
-                LEFT JOIN hardwares ON data_log.line = hardwares.device_id
-                WHERE EXTRACT(YEAR from data_log.created_at) = $year
+                SELECT hardwares.area_id, count(data_logs.id) As num
+                FROM data_logs
+                LEFT JOIN hardwares ON data_logs.line = hardwares.device_id
+                WHERE EXTRACT(YEAR from data_logs.created_at) = $year
                 GROUP BY hardwares.area_id
             ) t2 ON t1.id = t2.area_id
        ";
@@ -92,7 +80,7 @@ class Dashboard extends Model
     public static function getByDay($year){
         $sql ="
             SELECT  DATE(created_at) Date, COUNT(id) totalCOunt
-            FROM   data_log
+            FROM   data_logs
             GROUP BY  DATE(created_at)
         ";
 

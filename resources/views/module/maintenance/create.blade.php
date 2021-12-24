@@ -30,7 +30,7 @@
                 </div>
 
                 <hr>
-                {!! Form::open([
+                {!! Form::model($data,[
                         'method' => 'POST', 
                         'route' => ['maintenance.store'],
                         'files' => true

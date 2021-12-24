@@ -30,9 +30,6 @@ foreach ($category as $val){
 $categoryLabel = '"'.implode('","', $category_label).'"';
 $categoryValue = implode(',', $category_value);
 
-//Priority
-$priority = $priority[0]->normal. ",". $priority[0]->high. ",". $priority[0]->critical ;
-
 
 ?>
 
@@ -427,31 +424,7 @@ $priority = $priority[0]->normal. ",". $priority[0]->high. ",". $priority[0]->cr
         var chart = new ApexCharts(document.querySelector("#chart-category"), options);
         chart.render();
 
-        // Issue by Priority
-        var options = {
-          series: [{{ $priority }}],
-          chart: {
-            type: 'donut',
-          },
-          labels: ['Normal', 'High', 'Critical'],
-          legend: {
-              position: 'bottom',
-          },
-          responsive: [{
-            breakpoint: 480,
-            options: {
-              chart: {
-                width: 200
-              },
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }]
-        };
-        var chart = new ApexCharts(document.querySelector("#chart-priority"), options);
-        chart.render();
-
+  
         // Issue by Area
         var options = {
           series: [{

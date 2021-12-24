@@ -25,12 +25,6 @@ function getStatusData($status, $raw = null)
 		}else{
 			return "Open";
 		}
-	}elseif($status == 1){
-		if($raw==null){
-			return "<span class='badge bg-warning'>Waiting to Close</span>";
-		}else{
-			return "Waiting to Close";
-		}
 	}else {
 		if($raw==null){
 			return "<span class='badge bg-success'>Closed</span>";
@@ -65,7 +59,7 @@ function getDataUsersByID($id)
 
 
 function isAdministrator() {
-	if(Auth::user()->type==1){
+	if(Auth::user()->with('roles')->first()->name=='SuperAdmin'){
 		return true;
 	}else{
 		return false;

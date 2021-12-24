@@ -31,24 +31,10 @@ class HomeController extends Controller
         if($request->get('year') == null){
             $year = date('Y');
         }
-
-        if(isAdministrator()){
-
-            $hardware   = Dashboard::getHardware();
-            $entity     = Dashboard::getEntity($year);
-            $category   = Dashboard::getByCategory($year);
-            $area       = Dashboard::getByArea($year);
-            $priority   = Dashboard::getPriority($year);
-            $day        = Dashboard::getByDay($year);
-    
-            return view('dashboard.index',compact('year','entity','category','area','priority','hardware'));
-        }else{
-            $hardware = Dashboard::getHardware();
-            $device   = Hardware::whereNull('deleted_at')->get();
-            $entity   = Dashboard::getEntity($year);
-            return view('dashboard.line',compact('entity','hardware','device'));
-        }
-       
+        $hardware = Dashboard::getHardware();
+        $device   = Hardware::whereNull('deleted_at')->get();
+        $entity   = Dashboard::getEntity($year);
+        return view('dashboard.line',compact('entity','hardware','device'));
     }
 
 }

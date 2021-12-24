@@ -13,12 +13,15 @@ class CreateDataLog extends Migration
      */
     public function up()
     {
-        Schema::create('data_log', function (Blueprint $table) {
+        Schema::create('data_logs', function (Blueprint $table) {
             $table->id();
             $table->string('api_key')->nullable();
             $table->string('line')->nullable();
             $table->datetime('downtime')->nullable();
             $table->datetime('uptime')->nullable();
+            $table->bigInteger('category_id')->nullable()->unsigned();
+            $table->text('description')->nullable();
+            $table->bigInteger('assigned_by')->nullable()->unsigned();
             $table->integer('status')->default(0);
             $table->softDeletes();
             $table->timestamps();
@@ -32,6 +35,6 @@ class CreateDataLog extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('data_log');
+        Schema::dropIfExists('data_logs');
     }
 }

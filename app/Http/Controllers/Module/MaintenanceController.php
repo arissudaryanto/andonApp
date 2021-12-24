@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Module;
 
-use App\Models\Module\Maintenance;
 use App\Models\Module\Log;
 use App\Models\Module\Dashboard;
 use App\Models\Master\Category;
@@ -100,19 +99,18 @@ class MaintenanceController extends Controller
     public function log_datatables($line)
     {
       
-       $result = Log::where('line',$line)->whereNull('deleted_at')->orderBy('created_at','DESC');
+       $result = Log::
+       select('data_logs.*',
+        'categories.name as category',
+       )
+       ->leftJoin('categories', 'categories.id', '=', 'data_logs.category_id')
+       ->where('data_logs.line',$line)
+       ->orderBy('data_logs.created_at','DESC');
 
        return  DataTables::of($result)
         ->addColumn('action', function ($result) {
-            
-            if($result->status == '0' ) {
-                $action = "<a href='".route('maintenance.add', ['id' => Hashids::encode($result->id),'line' => $result->line ])."' title='Follow Up' data-toggle='tooltip' class='dropdown-item'><span class='fa fa-tools icon-lg'></span></a>";
-            }else{
-
-                $action = "<a data-bs-toggle='modal' data-bs-target='#modalPreview' href='#' data-value='".route('maintenance.show', ['id' => Hashids::encode($result->id)])."' title='Detail' class='dropdown-item modalPreview'><span class='fe-eye icon-lg'></span></a>";
-            }
+            $action = "<a href='".route('maintenance.add', ['id' => Hashids::encode($result->id),'line' => $result->line ])."' title='Follow Up' data-toggle='tooltip' class='dropdown-item'><span class='fa fa-tools icon-lg'></span></a>";
             return $action;
-        
         }) 
         ->addColumn('status', function ($result){
             return getStatusData($result->status);
@@ -160,25 +158,14 @@ class MaintenanceController extends Controller
     {
         $data = $request->all();
         $data['assigned_by'] = Auth::user()->id;
-        $data['number'] = \Config::get('app.prefix_number')."-".date('m').'-'.date('Y')."-".Str::random(6);
-        $dataLog['status'] = 1;
+       // $data['number'] = \Config::get('app.prefix_number')."-".date('m').'-'.date('Y')."-".Str::random(6);
         
-        if($request->hasFile('file_attachment')){
-            $file     = $request->file('file_attachment');
-            $name     = Str::random(25);
-            $folder   = '/uploads/'.date('Y').'/'.date('M').'/';
-            $filePath = $folder . $name. '.' . $file->getClientOriginalExtension();
-            $this->uploadResize($file, $folder, 'public', $name);
-            $dataHistory['file_attachment'] = $filePath;
-        }
-
         DB::beginTransaction();
 
         try {
 
             $log =  Log::findOrFail($request->get('data_log_id'));
-            $log->update($dataLog);
-            Maintenance::create($data);
+            $log->update($data);
 
             DB::commit();
             return redirect()->route('maintenance.log',Hashids::encode($request->get('hardware_id')))->with(['success' => trans('global.success_store')]);
@@ -206,25 +193,6 @@ class MaintenanceController extends Controller
     }
     
 
-    /**
-     * Update Maintenances in storage.
-     *
-     * @param  \App\Http\Requests\  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-   
-        $data = $request->all();
-        $data['updated_by'] = Auth::user()->id;
-        $items = Maintenance::findOrFail($id);
-        $items->update($data);
-        return redirect()->route('maintenance.index')->with(['success' => trans('global.success_update')]);
-    
-    }
-
-
     public function export(Request $request)
     {
       
@@ -232,28 +200,27 @@ class MaintenanceController extends Controller
 
             $query = Log::
             select(
-                'data_log.*',
+                'data_logs.*',
                 'categories.name AS category',
-                'maintenances.*')
-            ->leftJoin('maintenances', 'data_log.id', '=', 'maintenances.data_log_id')
-            ->leftJoin('categories', 'categories.id', '=', 'maintenances.category_id')
-            ->leftJoin('users', 'users.id', '=', 'maintenances.assigned_by')
+                'users.name as user')
+            ->leftJoin('categories', 'categories.id', '=', 'data_logs.category_id')
+            ->leftJoin('users', 'users.id', '=', 'data_logs.assigned_by')
             ->when(!empty($data['category_id']), function ($query) use ($data) {
-                return $query->where('maintenances.category_id',$data['category_id']);
+                return $query->where('data_logs.category_id',$data['category_id']);
             })
             ->when(!empty($data['line']), function ($query) use ($data) {
-                return $query->where('data_log.line',$data['line']);
+                return $query->where('data_logs.line',$data['line']);
             })
             ->when(!empty($data['start_date']), function ($query) use ($data) {
                 if($data['end_date']){
                     $start = date("Y-m-d",strtotime($data['start_date']));
                     $end   = date("Y-m-d",strtotime($data['end_date']."+1 day"));
-                    return $query->whereBetween('data_log.created_at', [$start , $end]);
+                    return $query->whereBetween('data_logs.created_at', [$start , $end]);
                 }else{
-                    return $query->where('data_log.created_at', $data['start_date']);
+                    return $query->where('data_logs.created_at', $data['start_date']);
                 }
             })
-            ->orderBy('data_log.created_at','DESC')
+            ->orderBy('data_logs.created_at','DESC')
             ->get();
 
             if( $query->isEmpty() ){
@@ -329,7 +296,6 @@ class MaintenanceController extends Controller
                 $sheet->getColumnDimension('H')->setAutoSize(true);
                 $sheet->getColumnDimension('I')->setAutoSize(true);
                 $sheet->getColumnDimension('J')->setAutoSize(true);
-                $sheet->getColumnDimension('K')->setAutoSize(true);
 
                 $sheet->setCellValue('B2', strtoupper(\Config::get('app.company_name')));
                 $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(16);
@@ -338,7 +304,6 @@ class MaintenanceController extends Controller
                 $sheet->getStyle('B3')->getAlignment()->setIndent(14);
                 $sheet->setCellValue('B4', 'Telp: '. \Config::get('app.company_telp'). ' Email: '.\Config::get('app.company_mail'));
                 $sheet->getStyle('B4')->getAlignment()->setIndent(14);
-
                 
                 $sheet->setCellValue('B6', 'ERORR REPORTING');
                 $sheet->getStyle('B6')->getFont()->setBold(true)->setUnderline(true);
@@ -351,23 +316,21 @@ class MaintenanceController extends Controller
                     $sheet->setCellValue('C8', ': All');
                 }
 
-
                 $sheet->setCellValue('B9', 'Period');
                 $sheet->setCellValue('C9', ': '.date('d M Y',strtotime($request->input('start_date')))." s/d ".date('d M Y',strtotime($request->input('end_date'))));
 
                 $sheet->setCellValue('A12', 'NO');
-                $sheet->setCellValue('B12', 'TICKET NUMBER');
-                $sheet->setCellValue('C12', 'LINE/TROLLEY ID');
-                $sheet->setCellValue('D12', 'GROUP AREA');
-                $sheet->setCellValue('E12', 'TIMESTAMP RED');
-                $sheet->setCellValue('F12', 'TIMESTAMP GREEN');
-                $sheet->setCellValue('G12', 'DOWNTIME');
-                $sheet->setCellValue('H12', 'CATEGORY');
-                $sheet->setCellValue('I12', 'DESCRIPTION');
-                $sheet->setCellValue('J12', 'ASSIGNED BY');
-                $sheet->setCellValue('K12', 'STATUS');
-                $sheet->getStyle('A12:K12')->getFont()->setBold(true);
-                $sheet->getStyle('A12:K12')->applyFromArray($styleArrayItem);
+                $sheet->setCellValue('B12', 'LINE/TROLLEY ID');
+                $sheet->setCellValue('C12', 'GROUP AREA');
+                $sheet->setCellValue('D12', 'TIMESTAMP RED');
+                $sheet->setCellValue('E12', 'TIMESTAMP GREEN');
+                $sheet->setCellValue('F12', 'DOWNTIME');
+                $sheet->setCellValue('G12', 'CATEGORY');
+                $sheet->setCellValue('H12', 'DETAIL');
+                $sheet->setCellValue('I12', 'MAINTANER');
+                $sheet->setCellValue('J12', 'STATUS');
+                $sheet->getStyle('A12:J12')->getFont()->setBold(true);
+                $sheet->getStyle('A12:J12')->applyFromArray($styleArrayItem);
         
                 $rows = 13;
                 $no   = 1 ;
@@ -375,18 +338,17 @@ class MaintenanceController extends Controller
                 foreach ($query as $item){
 
                     $sheet->setCellValue('A' . $rows, $no);
-                    $sheet->setCellValue('B' . $rows, $item->number);
-                    $sheet->setCellValue('C' . $rows, $item->line);
-                    $sheet->setCellValue('D' . $rows, $item->light);
-                    $sheet->setCellValue('E' . $rows, isset($item->downtime) ? date('d M Y H:i:s', strtotime($item->downtime)) : '');
-                    $sheet->setCellValue('F' . $rows, isset($item->uptime) ? date('d M Y H:i:s', strtotime($item->uptime)) : '');
-                    $sheet->setCellValue('G' . $rows, getDowntime($item->downtime, $item->uptime));
-                    $sheet->setCellValue('H' . $rows, $item->category);
-                    $sheet->setCellValue('I' . $rows, $item->description);
-                    $sheet->setCellValue('J' . $rows, $item->user);
-                    $sheet->setCellValue('K' . $rows, getStatusData($item->status,'raw'));
+                    $sheet->setCellValue('B' . $rows, $item->line);
+                    $sheet->setCellValue('C' . $rows, $item->light);
+                    $sheet->setCellValue('D' . $rows, isset($item->downtime) ? date('d M Y H:i:s', strtotime($item->downtime)) : '');
+                    $sheet->setCellValue('E' . $rows, isset($item->uptime) ? date('d M Y H:i:s', strtotime($item->uptime)) : '');
+                    $sheet->setCellValue('F' . $rows, getDowntime($item->downtime, $item->uptime));
+                    $sheet->setCellValue('G' . $rows, $item->category);
+                    $sheet->setCellValue('H' . $rows, $item->description);
+                    $sheet->setCellValue('I' . $rows, $item->user);
+                    $sheet->setCellValue('J' . $rows, getStatusData($item->status,'raw'));
 
-                    $sheet->getStyle('A' . $rows.':K'.$rows)->applyFromArray($styleArrayTabel);
+                    $sheet->getStyle('A' . $rows.':J'.$rows)->applyFromArray($styleArrayTabel);
                     $sheet->getStyle('G' . $rows)->getAlignment()->setWrapText(true); 
 
                     $rows = $rows + 1;

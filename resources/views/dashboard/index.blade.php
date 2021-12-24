@@ -32,12 +32,11 @@
                 <div class="row">
 
                     <div class="col-xl-6 col-md-6">
-                        <div class="card bg-warning text-dark">
+                        <div class="card bg-danger text-white">
                             <div class="card-body p-2">
                                 <div class="text-center">
                                     Open Issues <br>
-                                    <small class="mb-1">including hold/process SLA </small>
-                                    <h2 class="mb-1 mt-0"> {{ $entity[0]->open + $entity[0]->hold  + $entity[0]->process }} </h2>
+                                    <h2 class="mb-1 mt-0 text-white"> {{ $entity[0]->open }} </h2>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +47,6 @@
                             <div class="card-body p-2">
                                 <div class="text-center">
                                     Closed Issues <br>
-                                    <small class="mb-1">(Total)</small>
                                     <h2 class="mb-1 mt-0 text-white">{{$entity[0]->closed }}</h2>
                                 </div>
                             </div>
@@ -95,71 +93,45 @@
                 </div>
             </div>
             <div class="col-xl-8">
-                <div class="card">
-                    <div class="card-body">
+                <div class="row">
 
-                        <h4 class="header-title">Daily Issues</h4>
-
-                        <div class="mt-3 text-center">
-
-                            <div dir="ltr">
-                                <div id="chart-daily" class="apex-charts"></div>
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title mb-0">Issues by Group Area</h4>
+        
+                                <div class="mt-3 text-center">
+        
+                                    <div dir="ltr">
+                                        <div id="chart-area" class="apex-charts" data-colors="#0056c1,#e3eaef"></div>
+                                    </div>
+        
+                                </div>
                             </div>
-
+                        </div> 
+                    </div> 
+        
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-body">
+        
+                                <h4 class="header-title">Issues by Category </h4>
+        
+                                <div class="mt-3">
+                                    <div dir="ltr">
+                                        <div id="chart-category" class="apex-charts"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+        
                 </div>
             </div>
         </div>
         <!-- end row -->
 
-        <div class="row">
-
-            <div class="col-xl-4 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="header-title mb-0">Issues by Group Area</h4>
-
-                        <div class="mt-3 text-center">
-
-                            <div dir="ltr">
-                                <div id="chart-area" class="apex-charts" data-colors="#0056c1,#e3eaef"></div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div> 
-            </div> 
-
-            <div class="col-xl-4 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-
-                        <h4 class="header-title">Issues by Category </h4>
-
-                        <div class="mt-3">
-                            <div dir="ltr">
-                                <div id="chart-category" class="apex-charts"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="header-title">Issues by Priority</h4>
-                        <div class="mt-3">
-                            <div dir="ltr">
-                                <div id="chart-priority" class="apex-charts"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div> 
-            </div> 
-
-        </div>
+        
         
     </div> 
 

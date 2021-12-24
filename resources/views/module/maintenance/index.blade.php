@@ -83,7 +83,7 @@
     <script>
     $(document).ready(function() {
 
-        $('#dataTables').DataTable({
+       var table =  $('#dataTables').DataTable({
             processing: true,
             serverSide: true,
             ajax: '{{ route('maintenance.datatables') }}',
@@ -95,6 +95,13 @@
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ]
         });
-    });
+        setInterval(function() {
+            table.ajax.reload();
+            }, 10000 );
+            
+        setTimeout(function () { 
+            location.reload();
+        }, 60 * 1000);
+     });
 </script>
 @stop

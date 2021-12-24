@@ -26,6 +26,10 @@
                     @include('layouts.partials.messages')
                     @yield('content')
                 </div>
+                <div id="token"></div>
+                <div id="msg"></div>
+                <div id="notis"></div>
+                <div id="err"></div>
                 @include('layouts.partials.footer')
             </div>
         </div>
@@ -33,6 +37,7 @@
         <!-- App js -->
         <script src="{{ asset('js/vendor.min.js') }}"></script>
         <script src="{{ asset('js/app.min.js') }}"></script>
+       
         @yield('js')
 
     </body>

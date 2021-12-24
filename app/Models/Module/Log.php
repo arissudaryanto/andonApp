@@ -13,7 +13,7 @@ class Log extends Model
      *
      * @var string
      */
-    protected $table = 'data_log';
+    protected $table = 'data_logs';
     protected $guarded  = ['id'];
 
   
@@ -21,8 +21,8 @@ class Log extends Model
       return $this->belongsTo('App\Models\User','created_by');
    }
 
-   public function maintenance(){
-      return $this->hasOne(Maintenance::class,'data_log_id');
+   public function category(){
+      return $this->belongsTo('App\Models\Master\Category','category_id');
    }
 
 }

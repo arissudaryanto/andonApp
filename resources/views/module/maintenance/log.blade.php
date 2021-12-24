@@ -52,8 +52,8 @@
                 <hr>
                 <div class="row mB-20">
                     <div class="col-sm-12">
-                        <a href="#" data-bs-toggle="collapse" data-bs-target="#export" class="float-end">
-                            <i class="fa fa-file-excel icon-lg"></i>
+                        <a href="#" data-bs-toggle="collapse" data-bs-target="#export" class="float-end text-muted">
+                            <i class="fa fa-file-excel fa-2x"></i>
                         </a>
                         <h5>DATA LOG</h5>
                     </div>
@@ -91,9 +91,10 @@
                     <table id="dataTables" class="table table-striped" cellspacing="0" width="100%">
                         <thead class="bg-default">
                             <tr>
-                                <th><span class='badge bg-danger'>&nbsp;</span> Timestamp RED</th>
-                                <th><span class='badge bg-success'>&nbsp;</span> Timestamp GREEN</th>
+                                <th>Timestamp RED</th>
+                                <th>Timestamp GREEN</th>
                                 <th>Downtime</th>
+                                <th>Kategori</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -114,7 +115,7 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <div id="modalHistoryContent"></div>
+
               </div>
               <div class="modal-footer">
                     <button data-bs-dismiss="modal" class="float-right btn btn-light text-uppercase fsz-sm fw-600 mr-3">Close</a>
@@ -140,7 +141,7 @@
         })
 
 
-        $('#dataTables').DataTable({
+       var table = $('#dataTables').DataTable({
             processing: true,
             serverSide: true,
             ajax: '{{ route('maintenance.log.datatables',$hardware->device_id) }}',
@@ -148,11 +149,19 @@
                 {data: 'downtime', name: 'downtime', searchable: false},
                 {data: 'uptime', name: 'uptime', searchable: false},
                 {data: 'range', name: 'range'},
+                {data: 'category', name: 'categories.name'},
                 {data: 'status', name: 'status', searchable: false},
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ],
             "order": [[ 0, 'desc' ]]
         });
+        setInterval(function() {
+            table.ajax.reload();
+        }, 10000 );
+
+        setTimeout(function () { 
+            location.reload();
+        }, 60 * 1000);
     });
 </script>
 @stop

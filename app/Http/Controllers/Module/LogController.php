@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Module;
 
 use App\Models\Module\Log;
+use App\Models\User;
 use App\Models\Master\Hardware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -54,16 +55,19 @@ class LogController extends Controller
                     try {
                         $hardware->update($status);
                         if($request->get('light') == 'GREEN'){
-                            $up['uptime'] = date('Y-m-d H:i:s');
-                            $up['status'] = 2;
-                            $log = Log::where('line',$request->get('line'))->where('status',1)->first();
+                            $log = Log::where('line',$request->get('line'))->where('status',0)->first();
                             if($log){
+                                $up['uptime'] = date('Y-m-d H:i:s');
+                                $up['status'] = 1;
                                 $log->update($up);
                             }
                         }else{
                             Log::create($data);
                         }
                         DB::commit();
+                        if($request->get('light') == 'RED'){
+                            $this->sendNotification();
+                        }
                         return response()->json(['success' => 'Success'], 200);
                     } catch (\Exception $e) {
                         DB::rollback();
@@ -75,6 +79,41 @@ class LogController extends Controller
             }
         }
 
+    }
+
+
+    public function sendNotification()
+    {
+        $firebaseToken = User::whereNotNull('device_token')->pluck('device_token')->all();
+          
+        $SERVER_API_KEY = 'AAAAgroMrME:APA91bFg3SICOMCE4wBoqyQrr_80r9cykjAs8nkcr_H6RC-yrnJisfQ_AyC7QG1XJ2fB3AIHb9GIAyPK9IeYI8CMzrAYcxItohxRN9I47u0AlHMVUE4UlKvG-j4rBcXwEhROUbMdo-2A';
+  
+        $data = [
+            "to" => '/topics/log',
+            "notification" => [
+                "title" => 'Error Log',
+                "body" => 'Terdapat Sinyal',  
+            ]
+        ];
+        $dataString = json_encode($data);
+    
+        $headers = [
+            'Authorization: key=' . $SERVER_API_KEY,
+            'Content-Type: application/json',
+        ];
+    
+        $ch = curl_init();
+      
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+               
+        $response = curl_exec($ch);
+  
+        dd($response);
     }
 
 }
