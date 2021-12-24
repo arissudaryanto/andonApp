@@ -107,39 +107,11 @@
     
 </div>
 
-<div class="modal fade" id="modalPreview" tabindex="-2" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-md" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                  <h5 class="modal-title" id="modalMdTitle">Detail Maintenance</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-
-              </div>
-              <div class="modal-footer">
-                    <button data-bs-dismiss="modal" class="float-right btn btn-light text-uppercase fsz-sm fw-600 mr-3">Close</a>
-              </div>
-        </div>
-    </div>
-</div>
-
 @endsection
 
 @section('js')
     <script>
     $(document).ready(function() {
-
-        $('#modalPreview').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var value  = button.data('value');
-            $('#modalHistoryContent').load(value);
-        });
-
-        $('#modalPreview').on('hidden.bs.modal', function () {
-            $(this).find('form').trigger('reset');
-        })
-
 
        var table = $('#dataTables').DataTable({
             processing: true,
@@ -161,7 +133,7 @@
 
         setTimeout(function () { 
             location.reload();
-        }, 60 * 1000);
+        }, 30000);
     });
 </script>
 @stop

@@ -29,5 +29,8 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
+    'pusher' => [
+        'beams_instance_id' => '54bd92a7-c38b-4e3f-b148-2d89a80e9a83',
+        'beams_secret_key' => 'B32A8EDAB2167814ADD03B94ABBE79FE3B78AE1E3BD5739A622BDC6902948D2A',
+    ],
 ];

@@ -100,3 +100,12 @@
 
 
 
+@section('js')
+    <script>
+    $(document).ready(function() {
+        setTimeout(function () { 
+            location.reload();
+        }, 60 * 1000);
+    });
+</script>
+@stop

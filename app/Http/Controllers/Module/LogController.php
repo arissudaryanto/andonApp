@@ -14,6 +14,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use App\Traits\UploadTrait;
+use Pusher\Pusher;
+
 use Carbon\Carbon;
 use Auth;
 use File;
@@ -66,7 +68,7 @@ class LogController extends Controller
                         }
                         DB::commit();
                         if($request->get('light') == 'RED'){
-                            $this->sendNotification();
+                            $this->notification($hardware);
                         }
                         return response()->json(['success' => 'Success'], 200);
                     } catch (\Exception $e) {
@@ -82,38 +84,23 @@ class LogController extends Controller
     }
 
 
-    public function sendNotification()
+    public function notification($hardware )
     {
-        $firebaseToken = User::whereNotNull('device_token')->pluck('device_token')->all();
+        $hashLine = Hashids::encode($hardware->id);
+        $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(
+            "instanceId" => "54bd92a7-c38b-4e3f-b148-2d89a80e9a83",
+            "secretKey" => "B32A8EDAB2167814ADD03B94ABBE79FE3B78AE1E3BD5739A622BDC6902948D2A",
+          ));
           
-        $SERVER_API_KEY = 'AAAAgroMrME:APA91bFg3SICOMCE4wBoqyQrr_80r9cykjAs8nkcr_H6RC-yrnJisfQ_AyC7QG1XJ2fB3AIHb9GIAyPK9IeYI8CMzrAYcxItohxRN9I47u0AlHMVUE4UlKvG-j4rBcXwEhROUbMdo-2A';
-  
-        $data = [
-            "to" => '/topics/log',
-            "notification" => [
-                "title" => 'Error Log',
-                "body" => 'Terdapat Sinyal',  
-            ]
-        ];
-        $dataString = json_encode($data);
-    
-        $headers = [
-            'Authorization: key=' . $SERVER_API_KEY,
-            'Content-Type: application/json',
-        ];
-    
-        $ch = curl_init();
-      
-        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
-               
-        $response = curl_exec($ch);
-  
-        dd($response);
+          $publishResponse = $beamsClient->publishToInterests(
+            array("logs"),
+            array("web"     => array("notification" => array(
+              "title"       => "NOTIFICATION",
+              "body"        => $hardware->device_id. " is Downtime",
+              "deep_link"   => "http://127.0.0.1:8000/maintenance_log/".$hashLine,
+            )),
+          ));
+ 
     }
 
 }

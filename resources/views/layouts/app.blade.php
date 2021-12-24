@@ -26,10 +26,6 @@
                     @include('layouts.partials.messages')
                     @yield('content')
                 </div>
-                <div id="token"></div>
-                <div id="msg"></div>
-                <div id="notis"></div>
-                <div id="err"></div>
                 @include('layouts.partials.footer')
             </div>
         </div>
@@ -37,8 +33,30 @@
         <!-- App js -->
         <script src="{{ asset('js/vendor.min.js') }}"></script>
         <script src="{{ asset('js/app.min.js') }}"></script>
-       
+        <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
+        <script>
+            const beamsClient = new PusherPushNotifications.Client({
+                instanceId: '54bd92a7-c38b-4e3f-b148-2d89a80e9a83',
+            });
+            beamsClient
+            .start()
+            .then((beamsClient) => beamsClient.getDeviceId())
+            .then((deviceId) =>
+                console.log("Successfully registered with Beams. Device ID:", deviceId)
+            )
+            .then(() => beamsClient.addDeviceInterest("logs"))
+            .then(() => beamsClient.getDeviceInterests())
+            .then((interests) => console.log("Current interests:", interests))
+            .catch(console.error);
+        </script>
+        <script src="{{ asset('service-worker.js') }}"></script>
+
+
         @yield('js')
+
+        
+
+  
 
     </body>
 </html>
