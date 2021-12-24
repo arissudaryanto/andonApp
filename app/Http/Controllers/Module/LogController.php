@@ -96,7 +96,7 @@ class LogController extends Controller
             array("logs"),
             array("web"     => array("notification" => array(
               "title"       => "NOTIFICATION",
-              "body"        => $hardware->device_id. " is Downtime",
+              "body"        => $hardware->device_id. " is Down",
               "deep_link"   => "http://127.0.0.1:8000/maintenance_log/".$hashLine,
             )),
           ));
