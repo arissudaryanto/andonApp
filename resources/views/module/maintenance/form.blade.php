@@ -27,7 +27,7 @@
 <hr>
 <div class="form-group row">
     <div class="col-sm-12">
-        <a href="{{ route('maintenance.index') }}" class="btn btn-light text-uppercase">{{ trans('global.btn_cancel') }}</a>
+        <a href="{{ route('maintenance.log',Hashids::encode($hardware->id)) }}" class="btn btn-light text-uppercase">{{ trans('global.btn_cancel') }}</a>
         {!! Form::submit(trans('global.btn_submit'), ['class' => 'btn btn-danger text-uppercase','id' => 'btn-submit']) !!}
     </div>
 </div>

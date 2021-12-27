@@ -30,17 +30,6 @@ class LogController extends Controller
      */
     public function input(Request $request)
     {
-        
-        $data['api_key']    = $request->get('api_key');
-        $data['line']       = $request->get('line');
-        $data['status']     = 0;
-        $status['light']    = $request->get('light');
-
-        if($request->get('light') == 'RED'){
-            $data['downtime']    = date('Y-m-d H:i:s');
-            $status['downtime']  = date('Y-m-d H:i:s');
-        }
-
 
         if($request->get('api_key') == null || $request->get('line') == null ||  $request->get('light') == null ){
             return response()->json(['errors' => 'All field is required'], 401);
@@ -52,6 +41,18 @@ class LogController extends Controller
                     return response()->json(['errors' => 'Hardware already maintenance / or not trouble'], 401);
                 }else{
 
+                    $data['api_key']    = $request->get('api_key');
+                    $data['line']       = $request->get('line');
+                    $data['status']     = 0;
+                    $status['light']    = $request->get('light');
+            
+                    if($request->get('light') == 'RED'){
+                        $timestamp = strtotime( date('Y-m-d H:i:s') ) - $request->get('delay');
+                        $timestamp2 = strtotime( date('Y-m-d H:i:s') ) ;
+                        $data['downtime']  = date('Y-m-d H:i:s', $timestamp);
+                        $status['downtime']= date('Y-m-d H:i:s', $timestamp);
+                    }
+            
                     DB::beginTransaction();
 
                     try {
@@ -88,8 +89,8 @@ class LogController extends Controller
     {
         $hashLine = Hashids::encode($hardware->id);
         $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(
-            "instanceId" => "54bd92a7-c38b-4e3f-b148-2d89a80e9a83",
-            "secretKey" => "B32A8EDAB2167814ADD03B94ABBE79FE3B78AE1E3BD5739A622BDC6902948D2A",
+            "instanceId" => \Config::get('services.pusher.beams_instance_id'),
+            "secretKey" =>  \Config::get('services.pusher.beams_secret_key'),
           ));
           
           $publishResponse = $beamsClient->publishToInterests(
@@ -100,7 +101,7 @@ class LogController extends Controller
               "deep_link"   => "http://127.0.0.1:8000/maintenance_log/".$hashLine,
             )),
           ));
- 
+          
     }
 
 }

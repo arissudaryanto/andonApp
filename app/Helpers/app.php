@@ -120,6 +120,6 @@ function getDowntime ($downtime, $uptime) {
 			$diff = $date2->diff($date1);
 
 			// Call the format method on the DateInterval-object
-			return $diff->format('%ad %hh %im');
+			return $diff->format('%ad %hh %im %ss');
 	}
 }
