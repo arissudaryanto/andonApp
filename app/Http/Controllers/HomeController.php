@@ -32,7 +32,7 @@ class HomeController extends Controller
             $year = date('Y');
         }
         $hardware = Dashboard::getHardware();
-        $device   = Hardware::whereNull('deleted_at')->get();
+        $device   = Hardware::whereNull('deleted_at')->where('status',1)->get();
         $entity   = Dashboard::getEntity($year);
         return view('dashboard.line',compact('entity','hardware','device'));
     }

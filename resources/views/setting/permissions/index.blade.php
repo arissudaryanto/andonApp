@@ -10,8 +10,6 @@
                 <div class="page-title-box page-title-box-alt">
                     <h4 class="page-title">{{ trans('Permission') }}</h4>
                 </div>
-                <input class="form-control yearpicker float-end" name="year" required id="year" value="{{ $year }}" style="width:100px">          
-
             </div>
         </div>
 

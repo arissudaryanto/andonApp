@@ -9,7 +9,6 @@
                     <i class="fe-menu"></i>
                 </button>
             </li>
-
             <li>
                 <a class="navbar-toggle nav-link" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
                     <div class="lines">
@@ -21,11 +20,10 @@
             </li>  
 
             <li class="dropdown d-none d-lg-inline-block">
-                <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" data-toggle="fullscreen" href="#">
-                    <i class="fe-maximize noti-icon"></i>
+                <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" href="#">
+                    <i class="fe-bell noti-icon"></i>
                 </a>
             </li>
-
 
             <li class="dropdown notification-list topbar-dropdown">
                 <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">

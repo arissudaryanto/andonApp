@@ -56,6 +56,7 @@ class MaintenanceController extends Controller
       
        $result = Hardware::
        select('hardwares.*')
+       ->where('status',1)
        ->whereNull('deleted_at')->orderBy('created_at','ASC');
 
        return  DataTables::of($result)

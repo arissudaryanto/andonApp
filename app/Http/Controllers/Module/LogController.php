@@ -34,7 +34,9 @@ class LogController extends Controller
         if($request->get('api_key') == null || $request->get('line') == null ||  $request->get('light') == null ){
             return response()->json(['errors' => 'All field is required'], 401);
         }else{
-            $hardware = Hardware::where('device_id',$request->get('line'))->first();
+            $hardware = Hardware::where('device_id',$request->get('line'))
+            ->where('status',1)
+            ->first();
 
             if($hardware){
                 if($hardware->light == $request->get('light')){
