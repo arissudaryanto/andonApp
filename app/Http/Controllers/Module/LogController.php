@@ -71,7 +71,12 @@ class LogController extends Controller
                         }
                         DB::commit();
                         if($request->get('light') == 'RED'){
-                            $this->notification($hardware);
+                            $response = null;
+                            system("ping -c 1 google.com", $response);
+                            if($response == 0)
+                            {
+                                $this->notification($hardware);
+                            }
                         }
                         return response()->json(['success' => 'Success'], 200);
                     } catch (\Exception $e) {
