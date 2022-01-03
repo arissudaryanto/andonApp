@@ -63,7 +63,7 @@
                                 <th>Line/Trolley</th>
                                 <th>Current Status</th>
                                 <th>Last Downtime</th>
-                                <th>Total Downtime</th>
+                                <th>Total Downtime per Day</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -91,7 +91,7 @@
                 {data: 'device_id', name: 'device_id'},
                 {data: 'light', name: 'light'},
                 {data: 'downtime', name: 'downtime', searchable: false},
-                {data: 'uptime', name: 'uptime', searchable: false},
+                {data: 'total_downtime', name: 'total_downtime', searchable: false},
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ]
         });
@@ -101,7 +101,7 @@
             
         setTimeout(function () { 
             location.reload();
-        }, 30 * 1000);
+        }, 60 * 1000);
      });
 </script>
 @stop

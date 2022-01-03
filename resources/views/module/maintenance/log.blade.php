@@ -36,26 +36,16 @@
                             <div class="col-6">:  {!! getStatusLight($hardware->light) !!}</div>
                         </div>
                     </div>
-                    <div class="col-md-6 d-none d-lg-inline-block">
-                        <div class="row justify-content-end">
-                            <div class="col-xl-4 col-md-4">
-                                <div class="card bg-primary text-dark">
-                                    <div class="card-body p-2 text-white">
-                                        <h2 class="mb-1 mt-0 text-white">{{  $statistic[0]->open + $statistic[0]->closed }}  </h2>
-                                        Total Issues <br>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <hr>
                 <div class="row mB-20">
-                    <div class="col-sm-12">
+                    <div class="col-auto">
+                        <input class="form-control" type="text" name="date" id="date" value="{{ $date }}">
+                    </div>
+                    <div class="col">
                         <a href="#" data-bs-toggle="collapse" data-bs-target="#export" class="float-end text-muted">
                             <i class="fa fa-file-excel fa-2x"></i>
                         </a>
-                        <h5>DATA LOG</h5>
                     </div>
                 </div>
                 <hr>
@@ -112,11 +102,20 @@
 @section('js')
     <script>
     $(document).ready(function() {
+    
+        $('#date').datepicker({
+            todayBtn: true,
+            todayHighlight: true
+        }).on('changeDate', function(e) {
+            var date = encodeURIComponent(this.value.trim());
+            var url = "{{ route('maintenance.log',$device_id) }}?date="+date;
+            window.open(url, '_self');
+        });
 
        var table = $('#dataTables').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('maintenance.log.datatables',$hardware->device_id) }}',
+            ajax: '{{ route('maintenance.log.datatables',$hardware->device_id) }}?date={{$date}}',
             columns: [
                 {data: 'downtime', name: 'downtime', searchable: false},
                 {data: 'uptime', name: 'uptime', searchable: false},

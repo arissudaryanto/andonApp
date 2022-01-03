@@ -93,6 +93,20 @@ function format_number($val){
 }
 
 
+function getTotalDowntime ($deviceID) {
+	$sql = "
+	SELECT 
+	*
+	FROM data_logs`
+  	WHERE `line` = '".$deviceID."' AND DATE_FORMAT(created_at, '%Y-%m-%d') = CURDATE()
+	";
+	
+	return  DB::select( DB::raw($sql));
+
+
+
+}
+
 
 function getStatusLine ($deviceID) {
 	$sql = "

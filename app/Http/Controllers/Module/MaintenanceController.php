@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Auth;
 use File;
 use Storage;
+use DateTime;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -77,6 +78,9 @@ class MaintenanceController extends Controller
         ->editColumn('downtime', function ($result) {
             return $result->downtime ? with(new Carbon($result->downtime))->format('d-m-Y H:i:s') : '-';
         })
+        ->editColumn('total_downtime', function ($result) {
+            return $result->getDowntime();
+        })
         ->rawColumns(['action', 'status','light'])
         ->make(true);
 
@@ -84,27 +88,29 @@ class MaintenanceController extends Controller
 
     public function log(Request $request, $id)
     {
-        $year = $request->get('year');
-        if($request->get('year') == null){
-            $year = date('Y');
-        }
-
+       
+        if($request->get('date') == null) $date = date('m/d/Y');
+        else $date = $request->get('date');
+        $device_id = $id;
         $id        = Hashids::decode($id);
         $hardware  = Hardware::findOrFail($id['0']);
-        $statistic = Dashboard::getEntity($year,$hardware->device_id);
         $category  = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        return view('module.maintenance.log',compact('category','hardware','statistic'));
+        return view('module.maintenance.log',compact('category','hardware','date','device_id'));
     }
 
 
-    public function log_datatables($line)
+    public function log_datatables(Request $request, $line)
     {
       
+        $date = DateTime::createFromFormat('m/d/Y',$request->get('date'));
+        $date->format("Y-m-d");
+
        $result = Log::
        select('data_logs.*',
         'categories.name as category',
        )
        ->leftJoin('categories', 'categories.id', '=', 'data_logs.category_id')
+       ->whereDate('data_logs.created_at', $date)
        ->where('data_logs.line',$line)
        ->orderBy('data_logs.created_at','DESC');
 
