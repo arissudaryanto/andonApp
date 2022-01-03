@@ -33,7 +33,7 @@
         <!-- App js -->
         <script src="{{ asset('js/vendor.min.js') }}"></script>
         <script src="{{ asset('js/app.min.js') }}"></script>
-        <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
+        <script src="{{ asset('js/push-notifications-cdn.js') }}"></script>
         <script>
             const beamsClient = new PusherPushNotifications.Client({
                 instanceId: '54bd92a7-c38b-4e3f-b148-2d89a80e9a83',
