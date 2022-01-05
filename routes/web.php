@@ -78,6 +78,7 @@ Route::group(['prefix' => 'master', 'as' => 'master.', 'middleware'=>['auth']], 
     Route::get('hardware_datatables', ['uses' => 'App\Http\Controllers\Master\HardwareController@datatables', 'as' => 'hardware.datatables'] );
     Route::get('hardware_export', ['uses' => 'App\Http\Controllers\Master\HardwareController@export', 'as' => 'hardware.export'] );
     Route::match(['get', 'post'], 'hardware_import', ['uses' => 'App\Http\Controllers\Master\HardwareController@import', 'as' => 'hardware.import'] );
+    Route::match(['get', 'post'], 'hardware_setting/{id}', ['uses' => 'App\Http\Controllers\Master\HardwareController@setting', 'as' => 'hardware.setting'] );
 
 });
 

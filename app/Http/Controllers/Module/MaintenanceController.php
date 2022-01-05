@@ -54,9 +54,10 @@ class MaintenanceController extends Controller
 
     public function datatables($status =  null)
     {
-      
+       $id = Auth::user()->id;
        $result = Hardware::
        select('hardwares.*')
+       ->whereJsonContains('users', ["$id"])
        ->where('status',1)
        ->whereNull('deleted_at')->orderBy('created_at','ASC');
 

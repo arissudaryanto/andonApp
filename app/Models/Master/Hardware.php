@@ -5,7 +5,6 @@ namespace App\Models\Master;
 use Illuminate\Database\Eloquent\Model;
 use DateTime;
 use Carbon\Carbon;
-
 use App\Models\Module\Log;
 
 class Hardware extends Model
@@ -42,16 +41,16 @@ class Hardware extends Model
 
 
     public function getDowntime(){
-      $data = $this->log();
-      $diffInSeconds = 0;
-      foreach ($data as $item){
-        $date1 = new DateTime($item->downtime);
-			  $date2 = new DateTime($item->uptime);
-        $diffInSeconds += $date2->getTimestamp() - $date1->getTimestamp();
-      }
+        $data = $this->log();
+        $diffInSeconds = 0;
+        foreach ($data as $item){
+          $date1 = new DateTime($item->downtime);
+          $date2 = new DateTime($item->uptime);
+          $diffInSeconds += $date2->getTimestamp() - $date1->getTimestamp();
+        }
 
-      return $this->secondsToTime($diffInSeconds);
-   }
+        return $this->secondsToTime($diffInSeconds);
+    }
 
 
    function secondsToTime($seconds) {
@@ -59,4 +58,32 @@ class Hardware extends Model
       $dtT = new \DateTime("@$seconds");
       return $dtF->diff($dtT)->format('%ad %hh %im %ss');
   }
+
+
+    public function setUserAttribute($value)
+    {
+        $this->attributes['users'] = json_encode($value);
+    }
+  
+    /**
+     * Get the categories
+     *
+     */
+    public function getUserAttribute($value)
+    {
+        return $this->attributes['users'] = json_decode(json_encode($value),true);
+    }
+    
+
+    public function users()
+    {
+        return $this->belongsToMany(
+            config('permission.models.permission'),
+            config('permission.table_names.role_has_permissions'),
+            'role_id',
+            'permission_id'
+        );
+    }
+
+
 }

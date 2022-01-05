@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Models\Master\Hardware;
 use App\Models\Master\Area;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
@@ -47,12 +48,13 @@ class HardwareController extends Controller
     public function datatables()
     {
 
-        $result = Hardware::whereNull('deleted_at');
+       $result = Hardware::whereNull('deleted_at');
 
        return  DataTables::of($result)
         ->addColumn('action', function ($result) {
             $action = "<a href='".route('master.hardware.show', Hashids::encode($result->id))."' title='Tampilkan' data-toggle='tooltip' class='dropdown-item'><span class='fe-eye icon-lg'></span> Tampilkan</a>";
             $action .= "<a href='".route('master.hardware.edit', Hashids::encode($result->id))."' title='".trans('global.btn_edit')."' data-toggle='tooltip' class='dropdown-item'><span class='fe-edit'></span> Edit</a>";
+           $action .= "<a href='".route('master.hardware.setting', Hashids::encode($result->id))."' title='".trans('global.btn_edit')."' data-toggle='tooltip' class='dropdown-item'><span class='fe-settings'></span> Setting</a>";
             $action .= "<form class='delete' action='".route('master.hardware.destroy',  $result->id)."' method='POST'>
                                 <input name='_method' type='hidden' value='DELETE'>
                                 ".csrf_field()."
@@ -261,5 +263,22 @@ class HardwareController extends Controller
         }
     }
 
+
+    public function setting(Request $request,$id){
+
+        if($request->isMethod('get'))
+        {
+            $id = Hashids::decode($id);
+            $item  = Hardware::findOrFail($id['0']);
+            $user = User::get()->pluck('name', 'id');
+            return view('master.hardware.setting',compact('item','user'));
+        }else{
+            $data = $request->all();
+            $data['updated_by'] = Auth::user()->id;
+            $items = Hardware::findOrFail($id);
+            $items->update($data);
+            return redirect()->route('master.hardware.index')->with(['success' => 'Setting Hardware Sukses']);
+        }
+    }
 
 }
