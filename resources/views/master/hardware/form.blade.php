@@ -34,18 +34,6 @@
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <div class="col-sm-6">
-            <label>Group Area</label>
-            {!! Form::select('area_id', $area, old('area_id'), ['class' => 'form-control select2', 'placeholder' => '', 'required' => '']) !!}
-            @if($errors->has('area_id'))
-                <p class="help-block">
-                    {{ $errors->first('area_id') }}
-                </p>
-            @endif
-        </div>
-    </div>
-
     <div class="form-group row">
         <div class="col-sm-10">
             <label>Description</label>

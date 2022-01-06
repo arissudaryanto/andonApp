@@ -10,12 +10,14 @@
 
             <ul id="side-menu" >
 
-                <li>
-                    <a href="{{ route('dashboard')}}" class="waves-effect">
-                        <i class="fe-home"></i>
-                        <span> Dashboard </span>
-                    </a>
-                </li>
+                @canany(['dashboard.self'])
+                    <li>
+                        <a href="{{ route('dashboard')}}" class="waves-effect">
+                            <i class="fe-home"></i>
+                            <span> Dashboard </span>
+                        </a>
+                    </li>
+                @endcanany
 
                 @canany(['maintenance.self'])
                     <li>
@@ -26,7 +28,7 @@
                     </li>
                 @endcanany
 
-                @canany(['hardware.self','area.self','category.self'])
+                @canany(['hardware.self','category.self'])
                     <li>
                         <a href="#sidebarEmail" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarEmail">
                             <i class="fe-database"></i>
@@ -35,11 +37,6 @@
                         </a>
                         <div class="collapse" id="sidebarEmail">
                             <ul class="nav-second-level">
-                                @can('area.self')
-                                    <li>
-                                        <a href="{{ route('master.area.index')}}">Group Area</a>
-                                    </li>
-                                @endcan
                                 @can('hardware.self')
                                     <li>
                                         <a href="{{ route('master.hardware.index')}}">Hardware</a>

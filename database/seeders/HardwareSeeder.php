@@ -19,20 +19,17 @@ class HardwareSeeder extends Seeder
             [
                 'device_id' => 'line1',
                 'type'      => 'line',
-                'area_id'   => 1,
                 'name'      => 'Line 1',
                 'status'    => true,
             ],
             [
                 'device_id' => 'line2',
                 'type'      => 'line',
-                'area_id'   => 1,
                 'name'      => 'Line 2',
                 'status'    => true,
             ],
             [
                 'device_id' => 'line3',
-                'area_id'   => 1,
                 'type'      => 'line',
                 'name'      => 'Line 3',
                 'status'    => true,

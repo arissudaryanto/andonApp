@@ -28,12 +28,8 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-5">Line/Trolley ID</label>
-                            <div class="col-6">:  {{ $hardware->device_id }}</div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-5">Status</label>
-                            <div class="col-6">:  {!! getStatusLight($hardware->light) !!}</div>
+                            <label class="col-4">Line/Trolley ID</label>
+                            <div class="col-6">:  {{ $hardware->device_id }} <sup>{!! getStatusLight($hardware->light) !!} </sup></div>
                         </div>
                     </div>
                 </div>
@@ -49,6 +45,7 @@
                     </div>
                 </div>
                 <hr>
+                <div class="alert alert-danger mb-3">Isi secara berurutan dari case paling awal</div>
 
                 <div class="collapse mb-3" id="export" aria-expanded="false">
                     <form id="form" method="GET" action="{{ route('maintenance.export') }}">

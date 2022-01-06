@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Master;
 
 use App\Models\Master\Hardware;
-use App\Models\Master\Area;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -54,7 +53,7 @@ class HardwareController extends Controller
         ->addColumn('action', function ($result) {
             $action = "<a href='".route('master.hardware.show', Hashids::encode($result->id))."' title='Tampilkan' data-toggle='tooltip' class='dropdown-item'><span class='fe-eye icon-lg'></span> Tampilkan</a>";
             $action .= "<a href='".route('master.hardware.edit', Hashids::encode($result->id))."' title='".trans('global.btn_edit')."' data-toggle='tooltip' class='dropdown-item'><span class='fe-edit'></span> Edit</a>";
-           $action .= "<a href='".route('master.hardware.setting', Hashids::encode($result->id))."' title='".trans('global.btn_edit')."' data-toggle='tooltip' class='dropdown-item'><span class='fe-settings'></span> Setting</a>";
+            $action .= "<a href='".route('master.hardware.setting', Hashids::encode($result->id))."' title='".trans('global.btn_edit')."' data-toggle='tooltip' class='dropdown-item'><span class='fe-settings'></span> Setting</a>";
             $action .= "<form class='delete' action='".route('master.hardware.destroy',  $result->id)."' method='POST'>
                                 <input name='_method' type='hidden' value='DELETE'>
                                 ".csrf_field()."
@@ -92,8 +91,7 @@ class HardwareController extends Controller
      */
     public function create()
     {
-        $area = Area::whereNull('deleted_at')->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        return view('master.hardware.create', compact('area'));
+        return view('master.hardware.create');
     }
 
     /**
@@ -128,7 +126,6 @@ class HardwareController extends Controller
 
         return redirect()->route('master.hardware.index')->with(['success' => trans('global.success_store')]);
 
-
     }
 
 
@@ -142,8 +139,7 @@ class HardwareController extends Controller
     {
         $id = Hashids::decode($id);
         $item = Hardware::findOrFail($id['0']);
-        $area = Area::whereNull('deleted_at')->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        return view('master.hardware.edit', compact('item','area'));
+        return view('master.hardware.edit', compact('item'));
     }
 
 
@@ -216,8 +212,8 @@ class HardwareController extends Controller
             return (new FastExcel($query))->download('product-'.date('d-m-Y').'.xlsx', function ($data) {
 
                 return [
-                    'Device ID'    => $data->device_id,
-                    'Nama'   => $data->name,
+                    'Device ID'     => $data->device_id,
+                    'Nama'          => $data->name,
                     'Status'        => ($data->status == '1' ? 'Y' : 'N'),
                     'Tgl Input'     => dateTextMySQL2ID($data->created_at),
                     'Tgl Perbaharui'=> dateTextMySQL2ID($data->updated_at),
@@ -234,7 +230,6 @@ class HardwareController extends Controller
         {
             return view('master.hardware.upload');
         }
-        //validate the xls file
         $this->validate($request, array(
             'file'      => 'required'
         ));

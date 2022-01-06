@@ -68,9 +68,6 @@ Route::group(['prefix' => 'setting', 'as' => 'setting'. '.', 'middleware'=>['aut
 
 Route::group(['prefix' => 'master', 'as' => 'master.', 'middleware'=>['auth']], function () {
 
-    Route::resource('area', 'App\Http\Controllers\Master\AreaController');
-    Route::get('area_datatables', ['uses' => 'App\Http\Controllers\Master\AreaController@datatables', 'as' => 'area.datatables'] );
-
     Route::resource('category', 'App\Http\Controllers\Master\CategoryController');
     Route::get('category_datatables', ['uses' => 'App\Http\Controllers\Master\CategoryController@datatables', 'as' => 'category.datatables'] );
 

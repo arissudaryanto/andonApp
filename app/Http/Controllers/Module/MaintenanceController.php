@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Module;
 use App\Models\Module\Log;
 use App\Models\Module\Dashboard;
 use App\Models\Master\Category;
-use App\Models\Master\Area;
 use App\Models\Master\Hardware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -46,7 +45,6 @@ class MaintenanceController extends Controller
      */
     public function index()
     {
-        $area  = Area::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
         $category  = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
         $hardware  = Hardware::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'device_id')->prepend('Silahkan Pilih...', '');
         return view('module.maintenance.index',compact('category','hardware'));
@@ -303,7 +301,6 @@ class MaintenanceController extends Controller
                 $sheet->getColumnDimension('G')->setAutoSize(true);
                 $sheet->getColumnDimension('H')->setAutoSize(true);
                 $sheet->getColumnDimension('I')->setAutoSize(true);
-                $sheet->getColumnDimension('J')->setAutoSize(true);
 
                 $sheet->setCellValue('B2', strtoupper(\Config::get('app.company_name')));
                 $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(16);
@@ -327,18 +324,30 @@ class MaintenanceController extends Controller
                 $sheet->setCellValue('B9', 'Period');
                 $sheet->setCellValue('C9', ': '.date('d M Y',strtotime($request->input('start_date')))." s/d ".date('d M Y',strtotime($request->input('end_date'))));
 
+                $diffInSeconds = 0;
+        
+                foreach ($query as $item){
+
+                    $date1 = new DateTime($item->downtime);
+                    $date2 = new DateTime($item->uptime);
+                    $diffInSeconds += $date2->getTimestamp() - $date1->getTimestamp();
+                }
+
+                $sheet->setCellValue('B19', 'Total Downtime');
+                $sheet->setCellValue('C10', ': '.secondsToTime($diffInSeconds));
+
+                
                 $sheet->setCellValue('A12', 'NO');
                 $sheet->setCellValue('B12', 'LINE/TROLLEY ID');
-                $sheet->setCellValue('C12', 'GROUP AREA');
-                $sheet->setCellValue('D12', 'TIMESTAMP RED');
-                $sheet->setCellValue('E12', 'TIMESTAMP GREEN');
-                $sheet->setCellValue('F12', 'DOWNTIME');
-                $sheet->setCellValue('G12', 'CATEGORY');
-                $sheet->setCellValue('H12', 'DETAIL');
-                $sheet->setCellValue('I12', 'MAINTANER');
-                $sheet->setCellValue('J12', 'STATUS');
-                $sheet->getStyle('A12:J12')->getFont()->setBold(true);
-                $sheet->getStyle('A12:J12')->applyFromArray($styleArrayItem);
+                $sheet->setCellValue('C12', 'TIMESTAMP RED');
+                $sheet->setCellValue('D12', 'TIMESTAMP GREEN');
+                $sheet->setCellValue('E12', 'DOWNTIME');
+                $sheet->setCellValue('F12', 'CATEGORY');
+                $sheet->setCellValue('G12', 'DETAIL');
+                $sheet->setCellValue('H12', 'MAINTANER');
+                $sheet->setCellValue('I12', 'STATUS');
+                $sheet->getStyle('A12:I12')->getFont()->setBold(true);
+                $sheet->getStyle('A12:I12')->applyFromArray($styleArrayItem);
         
                 $rows = 13;
                 $no   = 1 ;
@@ -347,21 +356,22 @@ class MaintenanceController extends Controller
 
                     $sheet->setCellValue('A' . $rows, $no);
                     $sheet->setCellValue('B' . $rows, $item->line);
-                    $sheet->setCellValue('C' . $rows, $item->light);
-                    $sheet->setCellValue('D' . $rows, isset($item->downtime) ? date('d M Y H:i:s', strtotime($item->downtime)) : '');
-                    $sheet->setCellValue('E' . $rows, isset($item->uptime) ? date('d M Y H:i:s', strtotime($item->uptime)) : '');
-                    $sheet->setCellValue('F' . $rows, getDowntime($item->downtime, $item->uptime));
-                    $sheet->setCellValue('G' . $rows, $item->category);
-                    $sheet->setCellValue('H' . $rows, $item->description);
-                    $sheet->setCellValue('I' . $rows, $item->user);
-                    $sheet->setCellValue('J' . $rows, getStatusData($item->status,'raw'));
+                    $sheet->setCellValue('C' . $rows, isset($item->downtime) ? date('d M Y H:i:s', strtotime($item->downtime)) : '');
+                    $sheet->setCellValue('D' . $rows, isset($item->uptime) ? date('d M Y H:i:s', strtotime($item->uptime)) : '');
+                    $sheet->setCellValue('E' . $rows, getDowntime($item->downtime, $item->uptime));
+                    $sheet->setCellValue('F' . $rows, $item->category);
+                    $sheet->setCellValue('G' . $rows, $item->description);
+                    $sheet->setCellValue('H' . $rows, $item->user);
+                    $sheet->setCellValue('I' . $rows, getStatusData($item->status,'raw'));
 
-                    $sheet->getStyle('A' . $rows.':J'.$rows)->applyFromArray($styleArrayTabel);
+                    $sheet->getStyle('A' . $rows.':I'.$rows)->applyFromArray($styleArrayTabel);
                     $sheet->getStyle('G' . $rows)->getAlignment()->setWrapText(true); 
 
                     $rows = $rows + 1;
                     $no++;
                 }
+
+
                 
                 $writer = new Xlsx($spreadsheet);
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

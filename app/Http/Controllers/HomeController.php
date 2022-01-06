@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Dashboard\Sales;
 use App\Models\Module\Dashboard;
 use App\Models\Master\Hardware;
+use Illuminate\Support\Facades\Gate;
 use Auth;
 
 class HomeController extends Controller
@@ -27,19 +28,23 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $id = Auth::user()->id;
+        if (Gate::allows('dashboard.self')) {
+            $id = Auth::user()->id;
 
-        $year = $request->get('year');
-        if($request->get('year') == null){
-            $year = date('Y');
+            $year = $request->get('year');
+            if($request->get('year') == null){
+                $year = date('Y');
+            }
+            $hardware = Dashboard::getHardware();
+            $device   = Hardware::whereNull('deleted_at')
+            ->whereJsonContains('users', ["$id"])
+            ->where('status',1)->get();
+
+            $entity   = Dashboard::getEntity($year);
+            return view('dashboard.line',compact('entity','hardware','device'));
+        }else{
+            return redirect()->route('maintenance.index');
         }
-        $hardware = Dashboard::getHardware();
-        $device   = Hardware::whereNull('deleted_at')
-        ->whereJsonContains('users', ["$id"])
-        ->where('status',1)->get();
-
-        $entity   = Dashboard::getEntity($year);
-        return view('dashboard.line',compact('entity','hardware','device'));
     }
 
 }

@@ -35,7 +35,7 @@ class UserSeeder extends Seeder {
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     // create permissions
-    // Permission::create(['name' => 'users.self']);
+    Permission::create(['name' => 'dashboard.self']);
     $this->createPermission('user');
     $this->createPermission('role');
     $this->createPermission('hardware');
