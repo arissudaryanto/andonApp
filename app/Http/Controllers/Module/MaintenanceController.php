@@ -45,14 +45,16 @@ class MaintenanceController extends Controller
      */
     public function index()
     {
+        $id = Auth::user()->id;
+        $hardware  = Hardware::whereNull('deleted_at')->whereJsonContains('users', ["$id"])->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
         $category  = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-        $hardware  = Hardware::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'device_id')->prepend('Silahkan Pilih...', '');
-        return view('module.maintenance.index',compact('category','hardware'));
+        return view('module.maintenance.index', compact('category','hardware'));
     }
 
     public function datatables($status =  null)
     {
-       $id = Auth::user()->id;
+
+       $id = Auth::user()->id; 
        $result = Hardware::
        select('hardwares.*')
        ->whereJsonContains('users', ["$id"])
@@ -115,7 +117,7 @@ class MaintenanceController extends Controller
 
        return  DataTables::of($result)
         ->addColumn('action', function ($result) {
-            $action = "<a href='".route('maintenance.add', ['id' => Hashids::encode($result->id),'line' => $result->line ])."' title='Follow Up' data-toggle='tooltip' class='dropdown-item'><span class='fa fa-tools icon-lg'></span></a>";
+            $action = "<a href='".route('maintenance.add', ['id' => Hashids::encode($result->id),'line' => $result->line ])."' title='Follow Up' data-toggle='tooltip'><span class='fa fa-tools icon-lg'></span></a>";
             return $action;
         }) 
         ->addColumn('status', function ($result){
@@ -142,15 +144,20 @@ class MaintenanceController extends Controller
      */
     public function create(Request $request, $id)
     {
-        $id   = Hashids::decode($id);
-        $data = Log::findOrFail($id['0']);
-        if($data->line == $request->get('line') ){
-            $hardware = Hardware::where('device_id',$request->get('line'))->first();
-            $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
-            return view('module.maintenance.create',compact('data','category','hardware'));
+        $id  = Hashids::decode($id);
+        $hardware = Hardware::where('device_id',$request->get('line'))->first();
+        $log = Log::where('line',$request->get('line'))->whereNull('category_id')->orderBy('created_at','ASC')->limit(1)->get();
+        if($log && $log[0]->id != $id['0']){
+            return redirect()->back()->withErrors(['erorr' => 'Data Erorr Log pada tanggal: '.date('d F Y',strtotime($log[0]->created_at)).' ID: '.$log[0]->id.' belum diisi. Mohon isi secara berurutan']);
         }else{
-            return redirect()->route('maintenance.index')->withErrors(['erorr' => 'Data tidak sesuai']);
-        }
+            $data = Log::findOrFail($id['0']);
+            if($data->line == $request->get('line') ){
+                $category = Category::whereNull('deleted_at')->where('status',1)->get()->pluck('name', 'id')->prepend('Silahkan Pilih...', '');
+                return view('module.maintenance.create',compact('data','category','hardware'));
+            }else{
+                return redirect()->route('maintenance.log',Hashids::encode($id))->withErrors(['erorr' => 'Data tidak sesuai']);
+            }
+        }   
 
     }
 
@@ -164,7 +171,6 @@ class MaintenanceController extends Controller
     {
         $data = $request->all();
         $data['assigned_by'] = Auth::user()->id;
-       // $data['number'] = \Config::get('app.prefix_number')."-".date('m').'-'.date('Y')."-".Str::random(6);
         
         DB::beginTransaction();
 
@@ -370,8 +376,6 @@ class MaintenanceController extends Controller
                     $rows = $rows + 1;
                     $no++;
                 }
-
-
                 
                 $writer = new Xlsx($spreadsheet);
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -380,6 +384,146 @@ class MaintenanceController extends Controller
                 $writer->save("php://output");
                 die();
   
+        }
+    }
+
+
+    public function recap(Request $request)
+    {
+        $id = Auth::user()->id; 
+      
+        $data = $request->all();
+
+        $query = Hardware::
+        select('hardwares.*')
+        ->whereJsonContains('users', ["$id"])
+        ->where('status',1)
+        ->whereNull('deleted_at')->orderBy('created_at','ASC')
+        ->get();
+
+
+        $start = date("Y-m-d",strtotime($data['start_date']));
+        $end   = date("Y-m-d",strtotime($data['end_date']."+1 day"));
+
+        if( $query->isEmpty() ){
+            return redirect()->route('maintenance.index')->withInput()->withErrors('Tidak terdapat data untuk di Export');
+        }else{
+            $styleArrayTabel = array(
+            'alignment' => array(
+                    'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'rotation'   => 0,
+                        'wrap'       => true
+            ),
+            'borders' => array(
+                'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, //BORDER_THIN BORDER_MEDIUM BORDER_HAIR
+                        'color' => array('rgb' => '000000')
+                )
+                )
+            );
+    
+            $styleArrayItem = array(
+                'alignment' => array(
+                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                        'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'rotation'   => 0,
+                        'wrap'       => true
+                ),
+                'borders' => array(
+                    'allBorders' => array(
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, //BORDER_THIN BORDER_MEDIUM BORDER_HAIR
+                            'color' => array('rgb' => '000000')
+                    )
+                    )
+            );
+
+            $styleArrayBorder = [
+                'borders' => [
+                    'outline' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'color' => array('rgb' => '000000')
+                    ],
+                ],
+            ];
+
+            $spreadsheet = new Spreadsheet();
+            $spreadsheet->getActiveSheet()->setTitle('RESUME ERROR REPORTING');
+
+            $drawing = new Drawing();
+
+            $sheet      = $spreadsheet->getActiveSheet();
+            $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+            $sheet->getPageSetup()->setScale(80);
+            
+            $sheet->getPageMargins()->setTop(0.24);
+            $sheet->getPageMargins()->setRight(0.2);
+            $sheet->getPageMargins()->setLeft(0.2);
+            $sheet->getPageMargins()->setBottom(0.24);
+
+            $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+            $sheet->getPageSetup()->setScale(80);
+            
+            $sheet->getPageMargins()->setTop(0.24);
+            $sheet->getPageMargins()->setRight(0.2);
+            $sheet->getPageMargins()->setLeft(0.2);
+            $sheet->getPageMargins()->setBottom(0.24);
+    
+            $sheet->getColumnDimension('A')->setAutoSize(true);
+            $sheet->getColumnDimension('B')->setWidth(30);
+            $sheet->getColumnDimension('C')->setAutoSize(true);
+            $sheet->getColumnDimension('D')->setAutoSize(true);
+            $sheet->getColumnDimension('E')->setAutoSize(true);
+            
+
+            $sheet->setCellValue('B2', strtoupper(\Config::get('app.company_name')));
+            $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(16);
+            $sheet->getStyle('B2')->getAlignment()->setIndent(14);
+            $sheet->setCellValue('B3', \Config::get('app.company_address'));
+            $sheet->getStyle('B3')->getAlignment()->setIndent(14);
+            $sheet->setCellValue('B4', 'Telp: '. \Config::get('app.company_telp'). ' Email: '.\Config::get('app.company_mail'));
+            $sheet->getStyle('B4')->getAlignment()->setIndent(14);
+            
+            $sheet->setCellValue('B6', 'RESUME ERORR REPORTING');
+            $sheet->getStyle('B6')->getFont()->setBold(true)->setUnderline(true);
+
+            $sheet->setCellValue('B9', 'Period');
+            $sheet->setCellValue('C9', ': '.date('d M Y',strtotime($request->input('start_date')))." s/d ".date('d M Y',strtotime($request->input('end_date'))));
+
+
+            $sheet->setCellValue('A12', 'NO');
+            $sheet->setCellValue('B12', 'LINE/TROLLEY ID');
+            $sheet->setCellValue('C12', 'CURRENT STATUS');
+            $sheet->setCellValue('D12', 'LAST DOWNTIME');
+            $sheet->setCellValue('E12', 'TOTAL DOWNTIME');
+            $sheet->getStyle('A12:E12')->getFont()->setBold(true);
+            $sheet->getStyle('A12:E12')->applyFromArray($styleArrayItem);
+    
+            $rows = 13;
+            $no   = 1 ;
+            
+            foreach ($query as $item){
+
+                $sheet->setCellValue('A' . $rows, $no);
+                $sheet->setCellValue('B' . $rows, $item->device_id);
+                $sheet->setCellValue('C' . $rows, $item->light);
+                $sheet->setCellValue('D' . $rows, isset($item->downtime) ? date('d M Y H:i:s', strtotime($item->downtime)) : '');
+                $sheet->setCellValue('E' . $rows, $item->getDowntime($start, $end));
+
+                $sheet->getStyle('A' . $rows.':E'.$rows)->applyFromArray($styleArrayTabel);
+
+                $rows = $rows + 1;
+                $no++;
+            }
+
+
+            
+            $writer = new Xlsx($spreadsheet);
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment; filename="Erorr Maintancne -'.date('d M Y').'.xlsx"');
+            header('Cache-Control: max-age=0');
+            $writer->save("php://output");
+            die();
+
         }
     }
 

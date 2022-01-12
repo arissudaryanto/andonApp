@@ -39,7 +39,6 @@ class UserSeeder extends Seeder {
     $this->createPermission('user');
     $this->createPermission('role');
     $this->createPermission('hardware');
-    $this->createPermission('area');
     $this->createPermission('maintenance');
     $this->createPermission('category');
     $this->createPermission('permission');
@@ -51,7 +50,6 @@ class UserSeeder extends Seeder {
     $role1 = Role::create(['name' => 'Superadmin']);
     $this->permissionCrud($role1, 'user');
     $this->permissionCrud($role1, 'role');
-    $this->permissionCrud($role1, 'area');
     $this->permissionCrud($role1, 'hardware');
     $this->permissionCrud($role1, 'category');
     $this->permissionCrud($role1, 'setting');

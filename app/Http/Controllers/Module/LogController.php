@@ -71,13 +71,8 @@ class LogController extends Controller
                         }
                         DB::commit();
                         if($request->get('light') == 'RED'){
-                            $response = null;
-                            system("ping -c 1 google.com", $response);
-                            if($response == 0)
-                            {
-                                $this->notification($hardware);
-                            }
-                        }
+                            if(is_connected()) $this->notification($hardware);
+                        } 
                         return response()->json(['success' => 'Success'], 200);
                     } catch (\Exception $e) {
                         DB::rollback();
@@ -98,16 +93,16 @@ class LogController extends Controller
         $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(
             "instanceId" => \Config::get('services.pusher.beams_instance_id'),
             "secretKey" =>  \Config::get('services.pusher.beams_secret_key'),
-          ));
-          
-          $publishResponse = $beamsClient->publishToInterests(
-            array("logs"),
+        ));
+        
+        $publishResponse = $beamsClient->publishToInterests(
+        array("logs"),
             array("web"     => array("notification" => array(
-              "title"       => "NOTIFICATION",
-              "body"        => $hardware->device_id. " is Down",
-              "deep_link"   => "http://127.0.0.1:8000/maintenance_log/".$hashLine,
+                "title"       => "NOTIFICATION",
+                "body"        => $hardware->device_id. " is Down",
+                "deep_link"   => "http://127.0.0.1:8000/maintenance_log/".$hashLine,
             )),
-          ));
+        ));
           
     }
 

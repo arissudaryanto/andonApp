@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <hr>
-                <div class="alert alert-danger mb-3">Isi secara berurutan dari case paling awal</div>
+                <div class="alert alert-info mb-3">Mohon isi secara berurutan dari case paling awal</div>
 
                 <div class="collapse mb-3" id="export" aria-expanded="false">
                     <form id="form" method="GET" action="{{ route('maintenance.export') }}">
@@ -78,6 +78,7 @@
                     <table id="dataTables" class="table table-striped" cellspacing="0" width="100%">
                         <thead class="bg-default">
                             <tr>
+                                <th>Data ID</th>
                                 <th>Timestamp RED</th>
                                 <th>Timestamp GREEN</th>
                                 <th>Downtime</th>
@@ -114,6 +115,7 @@
             serverSide: true,
             ajax: '{{ route('maintenance.log.datatables',$hardware->device_id) }}?date={{$date}}',
             columns: [
+                {data: 'id', name: 'id', searchable: false},
                 {data: 'downtime', name: 'downtime', searchable: false},
                 {data: 'uptime', name: 'uptime', searchable: false},
                 {data: 'range', name: 'range'},

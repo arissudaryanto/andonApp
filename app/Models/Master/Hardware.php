@@ -35,13 +35,23 @@ class Hardware extends Model
     |------------------------------------------------------------------------------------
     */
 
-    public function log(){
-        return $this->hasMany(Log::class,'line','device_id')->whereDate('created_at', '=', Carbon::today())->get();
+    public function log($start = null, $end = null){
+
+        $data['start'] = $start; 
+        $data['end']   = $end;
+        $query = $this->hasMany(Log::class,'line','device_id')
+        ->when(!empty($data['start']), function ($query) use ($data) {
+            return $query->whereBetween('created_at', [$data['start'] , $data['end']]);
+        })
+        ->when(empty($data['start']), function ($query) {
+            return $query->whereDate('created_at', '=', Carbon::today());
+        });
+        return $query->get();
     }
 
 
-    public function getDowntime(){
-        $data = $this->log();
+    public function getDowntime($start = null, $end = null){
+        $data = $this->log($start, $end);
         $diffInSeconds = 0;
         foreach ($data as $item){
           $date1 = new DateTime($item->downtime);
@@ -50,7 +60,6 @@ class Hardware extends Model
         }
         return $this->secondsToTime($diffInSeconds);
     }
-
 
    function secondsToTime($seconds) {
       $dtF = new \DateTime('@0');
@@ -73,6 +82,4 @@ class Hardware extends Model
         return $this->attributes['users'] = json_decode(json_encode($value),true);
     }
     
-
-
 }

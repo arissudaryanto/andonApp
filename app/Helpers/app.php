@@ -103,7 +103,18 @@ function getTotalDowntime ($deviceID) {
 	
 	return  DB::select( DB::raw($sql));
 
+}
 
+function is_connected()
+{
+    $connected = @fsockopen("www.google.com", 80); 
+    if ($connected){
+        $is_conn = true;
+        fclose($connected);
+    }else{
+        $is_conn = false; 
+    }
+    return $is_conn;
 
 }
 

@@ -19,6 +19,9 @@
  
                 <div class="row mB-20">
                     <div class="col-sm-12">
+                        <a  href="#" data-bs-toggle="collapse" data-bs-target="#summary" class="btn btn-sm float-end btn-outline-danger text-uppercase ml-2">
+                            EXPORT SUMMARY
+                        </a>
                         <a  href="#" data-bs-toggle="collapse" data-bs-target="#export" class="btn btn-sm float-end btn-outline-success text-uppercase">
                             EXPORT DATA
                         </a>
@@ -26,6 +29,29 @@
                 </div>
 
                 <hr class="mB-30">
+                <div class="collapse mb-3" id="summary" aria-expanded="false">
+                    <form id="form" method="GET" action="{{ route('maintenance.recap') }}">
+                        {{ csrf_field() }}
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label>Periode</label>
+                                <div class="input-group w-100">
+                                    <input name="start_date" type="date" class="form-control" required value="{{ date('Y-m-d') }}">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">ke</div>
+                                    </div>
+                                    <input type="date" name="end_date" class="form-control" value="{{ date('Y-m-d') }}" required>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="submit" class="btn btn-danger border mt-3 text-uppercase" id="btn-filter">EXPORT</button>
+                            </div>
+                        </div>
+                    </form>
+                    <hr>
+                </div>  
+
+
                 <div class="collapse mb-3" id="export" aria-expanded="false">
                     <form id="form" method="GET" action="{{ route('maintenance.export') }}">
                         {{ csrf_field() }}
