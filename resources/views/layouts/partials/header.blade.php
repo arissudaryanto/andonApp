@@ -19,11 +19,6 @@
                 </a>
             </li>  
 
-            <li class="dropdown d-none d-lg-inline-block">
-                <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" href="#">
-                    <i class="fe-bell noti-icon"></i>
-                </a>
-            </li>
 
             <li class="dropdown notification-list topbar-dropdown">
                 <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
