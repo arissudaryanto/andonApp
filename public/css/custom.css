@@ -299,3 +299,15 @@ label{
 .navbar-custom .button-menu-mobile{
   color: #4d4d4d;
 }
+
+.notification-list .noti-icon-badge {
+  display: inline-block;
+  position: absolute;
+  top: 16px;
+  right: 0px;
+  padding: 5px 8px !important;
+}
+
+.notification-list .notify-item .notify-details{
+  margin-left:10px;
+}

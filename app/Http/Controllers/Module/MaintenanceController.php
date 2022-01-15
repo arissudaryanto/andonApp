@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Module;
 
 use App\Models\Module\Log;
 use App\Models\Module\Dashboard;
+use App\Models\Module\Notifications;
 use App\Models\Master\Category;
 use App\Models\Master\Hardware;
 use Illuminate\Http\Request;
@@ -55,11 +56,19 @@ class MaintenanceController extends Controller
     {
 
        $id = Auth::user()->id; 
-       $result = Hardware::
-       select('hardwares.*')
-       ->whereJsonContains('users', ["$id"])
-       ->where('status',1)
-       ->whereNull('deleted_at')->orderBy('created_at','ASC');
+       if(isAdministrator()){
+            $result = Hardware::
+            select('hardwares.*')
+            ->where('status',1)
+            ->whereNull('deleted_at')->orderBy('created_at','ASC');
+       }else{
+            $result = Hardware::
+            select('hardwares.*')
+            ->whereJsonContains('users', ["$id"])
+            ->where('status',1)
+            ->whereNull('deleted_at')->orderBy('created_at','ASC');
+       }
+ 
 
        return  DataTables::of($result)
         ->addColumn('action', function ($result) {
@@ -87,9 +96,15 @@ class MaintenanceController extends Controller
 
     }
 
+    public function view_log($line)
+    {
+        Notifications::whereJsonContains('data->device_id',$line)->where('notifiable_id',Auth::user()->id)->whereNull('read_at')->update(['read_at' => date('Y-m-d H:i:s')]);;
+        $hardware  = Hardware::where('device_id',$line)->first();
+        return redirect()->route('maintenance.log',Hashids::encode($hardware->id))->with(['success' => 'Notifikasi telah dibaca']);
+    }
+
     public function log(Request $request, $id)
     {
-       
         if($request->get('date') == null) $date = date('m/d/Y');
         else $date = $request->get('date');
         $device_id = $id;
@@ -527,5 +542,13 @@ class MaintenanceController extends Controller
         }
     }
 
+
+    public function notification()
+    {
+        
+        $notif = auth()->user()->unreadNotifications;
+        if(count($notif) > 0) return true;
+        else return false;
+    }
 
 }

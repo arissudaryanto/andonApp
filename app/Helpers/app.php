@@ -155,3 +155,9 @@ function secondsToTime($seconds) {
 	$dtT = new \DateTime("@$seconds");
 	return $dtF->diff($dtT)->format('%ad %hh %im %ss');
 }
+
+
+
+function notify() {
+	return auth()->user()->unreadNotifications;
+}

@@ -29,10 +29,28 @@
                 @include('layouts.partials.footer')
             </div>
         </div>
+        <audio id="audiotag1" src="{{ asset('sound/beep.wav') }}" preload="auto"></audio> 
 
         <!-- App js -->
         <script src="{{ asset('js/vendor.min.js') }}"></script>
         <script src="{{ asset('js/app.min.js') }}"></script>
+
+        @section('js')
+        <script>
+            function load() {
+                $.ajax({ //create an ajax request to load_page.php
+                    type: "GET",
+                    url: "{{ route('notification') }}",
+                    dataType: "html", //expect html to be returned                
+                    success: function (response) {
+                        if(response == true) document.getElementById('audiotag1').play();
+                        setTimeout(load, 10000);
+                    }
+                });
+            }
+            load();
+       </script>
+{{-- 
         <script src="{{ asset('js/push-notifications-cdn.js') }}"></script>
         <script>
             const beamsClient = new PusherPushNotifications.Client({
@@ -49,14 +67,10 @@
             .then((interests) => console.log("Current interests:", interests))
             .catch(console.error);
         </script>
-        <script src="{{ asset('service-worker.js') }}"></script>
-
+        <script src="{{ asset('service-worker.js') }}"></script> --}}
 
         @yield('js')
 
-        
-
-  
 
     </body>
 </html>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Module;
 
 use App\Models\Module\Log;
+use App\Models\Module\Notifications;
 use App\Models\User;
 use App\Models\Master\Hardware;
 use Illuminate\Http\Request;
@@ -14,11 +15,13 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use App\Traits\UploadTrait;
-use Pusher\Pusher;
+use App\Notifications\LogNotification;
+// use Pusher\Pusher;
 
 use Carbon\Carbon;
 use Auth;
 use File;
+use Notification;
 
 class LogController extends Controller
 {
@@ -47,10 +50,9 @@ class LogController extends Controller
                     $data['line']       = $request->get('line');
                     $data['status']     = 0;
                     $status['light']    = $request->get('light');
+                    $timestamp  = strtotime( date('Y-m-d H:i:s') ) - $request->get('delay');
             
                     if($request->get('light') == 'RED'){
-                        $timestamp = strtotime( date('Y-m-d H:i:s') ) - $request->get('delay');
-                        $timestamp2 = strtotime( date('Y-m-d H:i:s') ) ;
                         $data['downtime']  = date('Y-m-d H:i:s', $timestamp);
                         $status['downtime']= date('Y-m-d H:i:s', $timestamp);
                     }
@@ -60,9 +62,12 @@ class LogController extends Controller
                     try {
                         $hardware->update($status);
                         if($request->get('light') == 'GREEN'){
+                            
+                            Notifications::whereJsonContains('data->device_id',$request->get('line'))->whereNull('read_at')->update(['read_at' => date('Y-m-d H:i:s')]);;
+
                             $log = Log::where('line',$request->get('line'))->where('status',0)->first();
                             if($log){
-                                $up['uptime'] = date('Y-m-d H:i:s');
+                                $up['uptime'] = date('Y-m-d H:i:s', $timestamp);
                                 $up['status'] = 1;
                                 $log->update($up);
                             }
@@ -71,7 +76,7 @@ class LogController extends Controller
                         }
                         DB::commit();
                         if($request->get('light') == 'RED'){
-                            if(is_connected()) $this->notification($hardware);
+                            $this->notification($hardware);
                         } 
                         return response()->json(['success' => 'Success'], 200);
                     } catch (\Exception $e) {
@@ -87,22 +92,32 @@ class LogController extends Controller
     }
 
 
-    public function notification($hardware )
+    public function notification($hardware)
     {
-        $hashLine = Hashids::encode($hardware->id);
-        $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(
-            "instanceId" => \Config::get('services.pusher.beams_instance_id'),
-            "secretKey" =>  \Config::get('services.pusher.beams_secret_key'),
-        ));
+        $data = [
+            "device_id"  => $hardware->device_id,
+            "body"       => $hardware->device_id. " is Down",
+            "url"        => "http://127.0.0.1:8000/maintenance_view_log/".$hardware->device_id,
+        ];
+
+        $user_id = json_decode($hardware->users);
+        $users = User::whereIn('id',$user_id )->get();
+
+        Notification::send($users, new LogNotification($data));
+
+        // $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(
+        //     "instanceId" => \Config::get('services.pusher.beams_instance_id'),
+        //     "secretKey" =>  \Config::get('services.pusher.beams_secret_key'),
+        // ));
         
-        $publishResponse = $beamsClient->publishToInterests(
-        array("logs"),
-            array("web"     => array("notification" => array(
-                "title"       => "NOTIFICATION",
-                "body"        => $hardware->device_id. " is Down",
-                "deep_link"   => "http://127.0.0.1:8000/maintenance_log/".$hashLine,
-            )),
-        ));
+        // $publishResponse = $beamsClient->publishToInterests(
+        // array("logs"),
+        //     array("web"     => array("notification" => array(
+        //         "title"       => "NOTIFICATION",
+        //         "body"        => $hardware->device_id. " is Down",
+        //         "deep_link"   => "http://127.0.0.1:8000/maintenance_log/".$hashLine,
+        //     )),
+        // ));
           
     }
 

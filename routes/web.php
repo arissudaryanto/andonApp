@@ -40,6 +40,10 @@ Route::group(['middleware'=>['auth']], function () {
 
     Route::get('maintenance_log/{id?}', ['uses' => 'App\Http\Controllers\Module\MaintenanceController@log', 'as' => 'maintenance.log'] );
     Route::get('maintenance_log_datatables/{line?}', ['uses' => 'App\Http\Controllers\Module\MaintenanceController@log_datatables', 'as' => 'maintenance.log.datatables'] );
+   
+    Route::get('maintenance_view_log/{id?}', ['uses' => 'App\Http\Controllers\Module\MaintenanceController@view_log', 'as' => 'maintenance.view_log'] );
+
+    Route::get('notification', ['uses' => 'App\Http\Controllers\Module\MaintenanceController@notification', 'as' => 'notification'] );
 
 });
 

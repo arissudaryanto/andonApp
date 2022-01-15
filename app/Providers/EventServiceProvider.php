@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
-    /**
+    /**eddr
      * The event listener mappings for the application.
      *
      * @var array

@@ -36,9 +36,18 @@ class HomeController extends Controller
                 $year = date('Y');
             }
             $hardware = Dashboard::getHardware();
-            $device   = Hardware::whereNull('deleted_at')
-            ->whereJsonContains('users', ["$id"])
-            ->where('status',1)->get();
+            if(isAdministrator()){
+                $device   = Hardware::
+                select('hardwares.*')
+                ->where('status',1)
+                ->whereNull('deleted_at')->orderBy('created_at','ASC')->get();
+           }else{
+                $device   = Hardware::
+                select('hardwares.*')
+                ->whereJsonContains('users', ["$id"])
+                ->where('status',1)
+                ->whereNull('deleted_at')->orderBy('created_at','ASC')->get();
+           }
 
             $entity   = Dashboard::getEntity($year);
             return view('dashboard.line',compact('entity','hardware','device'));
@@ -47,4 +56,8 @@ class HomeController extends Controller
         }
     }
 
+    public function notify()
+    {
+       
+    }
 }

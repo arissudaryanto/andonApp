@@ -124,7 +124,7 @@
         setInterval(function() {
             table.ajax.reload();
             }, 10000 );
-            
+        
         setTimeout(function () { 
             location.reload();
         }, 60 * 1000);
