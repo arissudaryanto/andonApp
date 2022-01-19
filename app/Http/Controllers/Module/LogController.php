@@ -97,7 +97,7 @@ class LogController extends Controller
         $data = [
             "device_id"  => $hardware->device_id,
             "body"       => $hardware->device_id. " is Down",
-            "url"        => "http://127.0.0.1:8000/maintenance_view_log/".$hardware->device_id,
+            "url"        => config('app.url')."maintenance_view_log/".$hardware->device_id,
         ];
 
         $user_id = json_decode($hardware->users);
