@@ -102,7 +102,7 @@ class LogController extends Controller
 
         $user_id = json_decode($hardware->users);
         $users = User::whereIn('id',$user_id )->get();
-        if($users){
+        if(count($users) > 0){
             Notification::send($users, new LogNotification($data));
         }
 
