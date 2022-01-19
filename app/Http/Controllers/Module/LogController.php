@@ -102,8 +102,9 @@ class LogController extends Controller
 
         $user_id = json_decode($hardware->users);
         $users = User::whereIn('id',$user_id )->get();
-
-        Notification::send($users, new LogNotification($data));
+        if($users){
+            Notification::send($users, new LogNotification($data));
+        }
 
         // $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(
         //     "instanceId" => \Config::get('services.pusher.beams_instance_id'),
