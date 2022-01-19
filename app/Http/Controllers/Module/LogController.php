@@ -75,7 +75,7 @@ class LogController extends Controller
                            Log::create($data);
                         }
                         DB::commit();
-                        if($request->get('light') == 'RED'){
+                        if($request->get('light') == 'RED' && $hardware->users != NULL){
                             $this->notification($hardware);
                         } 
                         return response()->json(['success' => 'Success'], 200);
@@ -99,15 +99,10 @@ class LogController extends Controller
             "body"       => $hardware->device_id. " is Down",
             "url"        => config('app.url')."maintenance_view_log/".$hardware->device_id,
         ];
-
        
-        if($hardware->users){
-            $user_id = json_decode($hardware->users);
-            $users   = User::whereIn('id',$user_id)->get();
-            Notification::send($users, new LogNotification($data));
-        }else{
-            return false;
-        }
+        $user_id = json_decode($hardware->users);
+        $users   = User::whereIn('id',$user_id)->get();
+        Notification::send($users, new LogNotification($data));
 
         // $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(
         //     "instanceId" => \Config::get('services.pusher.beams_instance_id'),
