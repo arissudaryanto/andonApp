@@ -56,18 +56,11 @@ class MaintenanceController extends Controller
     {
 
        $id = Auth::user()->id; 
-       if(isAdministrator()){
-            $result = Hardware::
-            select('hardwares.*')
-            ->where('status',1)
-            ->whereNull('deleted_at')->orderBy('created_at','ASC');
-       }else{
-            $result = Hardware::
-            select('hardwares.*')
-            ->whereJsonContains('users', ["$id"])
-            ->where('status',1)
-            ->whereNull('deleted_at')->orderBy('created_at','ASC');
-       }
+        $result = Hardware::
+        select('hardwares.*')
+        ->whereJsonContains('users', ["$id"])
+        ->where('status',1)
+        ->whereNull('deleted_at')->orderBy('created_at','ASC');
  
 
        return  DataTables::of($result)
