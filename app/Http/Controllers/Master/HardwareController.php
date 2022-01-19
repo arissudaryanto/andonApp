@@ -270,6 +270,7 @@ class HardwareController extends Controller
         }else{
             $data = $request->all();
             $data['updated_by'] = Auth::user()->id;
+            $data['users'] = $request->get('users');
             $items = Hardware::findOrFail($id);
             $items->update($data);
             return redirect()->route('master.hardware.index')->with(['success' => 'Setting Hardware Sukses']);

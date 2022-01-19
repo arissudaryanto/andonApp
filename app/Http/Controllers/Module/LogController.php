@@ -60,7 +60,7 @@ class LogController extends Controller
                     DB::beginTransaction();
 
                     try {
-                        $hardware->update($status);
+                       $hardware->update($status);
                         if($request->get('light') == 'GREEN'){
                             
                             Notifications::whereJsonContains('data->device_id',$request->get('line'))->whereNull('read_at')->update(['read_at' => date('Y-m-d H:i:s')]);;
@@ -72,7 +72,7 @@ class LogController extends Controller
                                 $log->update($up);
                             }
                         }else{
-                            Log::create($data);
+                           Log::create($data);
                         }
                         DB::commit();
                         if($request->get('light') == 'RED'){
@@ -100,10 +100,13 @@ class LogController extends Controller
             "url"        => config('app.url')."maintenance_view_log/".$hardware->device_id,
         ];
 
-        $user_id = json_decode($hardware->users);
-        $users = User::whereIn('id',$user_id )->get();
-        if(count($users) > 0){
+       
+        if($hardware->users){
+            $user_id = json_decode($hardware->users);
+            $users   = User::whereIn('id',$user_id)->get();
             Notification::send($users, new LogNotification($data));
+        }else{
+            return false;
         }
 
         // $beamsClient = new \Pusher\PushNotifications\PushNotifications(array(

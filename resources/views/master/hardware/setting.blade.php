@@ -31,10 +31,6 @@
                             <div class="col-sm-2">Nama</div>
                             <div class="col-sm-6">: {{ $item->name }} </div>
                         </div>
-                        <div class="form-group row mb-2">
-                            <div class="col-sm-2">Tanggal Input</div>
-                            <div class="col-sm-6">: {{ date('d M Y H:i:s', strtotime($item->created_at)) }} </div>
-                        </div>
                         <hr>
                         <div class="form-group row mb-2">
                             <div class="col-sm-3">Setting User <span class="text-danger">*</span><br><small>User yang dapat mengakses Line/Trolley</small></div>
