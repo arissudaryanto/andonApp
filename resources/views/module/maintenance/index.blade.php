@@ -112,12 +112,13 @@
        var table =  $('#dataTables').DataTable({
             processing: true,
             serverSide: true,
+            "pageLength": 100,
             ajax: '{{ route('maintenance.datatables') }}',
             columns: [
                 {data: 'device_id', name: 'device_id'},
                 {data: 'light', name: 'light'},
                 {data: 'downtime', name: 'downtime', searchable: false},
-                {data: 'total_downtime', name: 'total_downtime', searchable: false},
+                {data: 'total_downtime', name: 'total_downtime', searchable: false, orderable: false},
                 {data: 'action', name: 'action', orderable: false, searchable: false}
             ]
         });
